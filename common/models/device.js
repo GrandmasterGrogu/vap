@@ -1,5 +1,9 @@
-module.exports = function(Device) {
-
+var crypto = require('crypto') // Cryptographic functions
+var ecdsa = require('ecdsa') // Elliptical Curve Digital Signatures
+module.exports = function (Device) {
+    var constants = {
+        REGISTER : "REGISTER"
+    };
 // A function to register the device and give it a token to communicate further 
 
     Device.greet = function (msg, cb) {

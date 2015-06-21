@@ -37,7 +37,7 @@ public class SlidePresenterActivity extends FragmentActivity {
 
         fragments.add(new LessonOneFragment());
         fragments.add(new LessonTwoFragment());
-        fragments.add(new LessonThreeFragment());
+
 
         fragments.add(new FinaleFragment());
         fragments.add(new BackFragment());

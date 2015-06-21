@@ -13,6 +13,13 @@ import android.widget.Toast;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
+import com.alexxg.android_vap_demo.GuideApplication;
+import com.alexxg.android_vap_demo.R;
+import com.alexxg.android_vap_demo.HtmlFragment;
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 
 /**
  * Implementation for Lesson One: One Model, Hold the Schema
@@ -94,7 +101,7 @@ public class LessonOneFragment extends HtmlFragment {
 
 	    // 3. From that prototype, create a new NoteModel. We pass in an empty dictionary to defer
 		//    setting any values.
-		NoteModel model = repository.createModel(null);
+		NoteModel model = repository.createObject(ImmutableMap.of("user", "Pencil"));
 
 	    // 4. Pull model values from the UI.
 		model.setUser(getUser());

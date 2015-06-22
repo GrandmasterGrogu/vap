@@ -13,18 +13,13 @@ import android.widget.Toast;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
-import com.alexxg.android_vap_demo.GuideApplication;
-import com.alexxg.android_vap_demo.R;
-import com.alexxg.android_vap_demo.HtmlFragment;
 import com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
 
 
 /**
  * Implementation for Lesson One: One Model, Hold the Schema
  */
-public class LessonOneFragment extends HtmlFragment {
+public class DemoOne extends HtmlFragment {
 	/**
 	 * This custom subclass of Model is the closest thing to a "schema" the Note model has.
 	 *
@@ -137,7 +132,7 @@ public class LessonOneFragment extends HtmlFragment {
             Bundle savedInstanceState) {
 
         setRootView((ViewGroup) inflater.inflate(
-        		R.layout.fragment_lesson_one, container, false));
+        		R.layout.fragment_demo_one, container, false));
 
         setHtmlText(R.id.content, R.string.lessonOne_content);
 

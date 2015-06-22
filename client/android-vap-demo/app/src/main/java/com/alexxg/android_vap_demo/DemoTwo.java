@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Implementation for Lesson Two: Existing Data? No Problem.
  */
-public class LessonTwoFragment extends HtmlFragment {
+public class DemoTwo extends HtmlFragment {
 
     /**
      * Unlike Lesson One, our CarModel class is based _entirely_ on an existing schema.
@@ -125,7 +125,7 @@ public class LessonTwoFragment extends HtmlFragment {
         //    the server for all Cars, filling out our ListView with the results. In this case,
         //    the Repository is really the workhorse; the Model is just a simple container.
 
-        repository.findAll(new ModelRepository.FindAllCallback<LessonTwoFragment.CarModel>() {
+        repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.CarModel>() {
             @Override
             public void onSuccess(List<CarModel> models) {
                 list.setAdapter(new CarListAdapter(getActivity(), models));
@@ -180,7 +180,7 @@ public class LessonTwoFragment extends HtmlFragment {
             Bundle savedInstanceState) {
 
         setRootView((ViewGroup) inflater.inflate(
-                R.layout.fragment_lesson_two, container, false));
+                R.layout.fragment_demo_two, container, false));
 
         list = (ListView)getRootView().findViewById(R.id.list);
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Video Authentication Protocol</string>
+    <string name="strongloop_logo">StrongLoop logo</string>
+    <string name="hint_swipe_right_to_left">(Hint: Swipe right-to-left)</string>
+    <string name="finale_content"><![CDATA[
+        <h3>Credits</h3>
+        <p>Author: Alex X. Galloway</p>
+           ]]></string>
+    <string name="finale_callToAction"><![CDATA[
+        <p>For more info on the framework:<p>
+        <p><big><strong>
+          <a href="mailto:axg105@shsu.edu">axg105@shsu.edu</a>
+        </strong></big></p>
+    ]]></string>
+    <string name="introduction_content"><![CDATA[
+        <h3>Welcome to the Video Authentication Protocol Demo!</h3>
+        <p>The purpose of the demo is to demonstrate a new model for
+        non-repudiation, integrity and authentication of videos.
+        This means someone can prove that a video was recorded by their device.</p>
+        <p>The protocol works by interacting components provided by the device manufacturer.</p>
+    <p>    <tt>Video Authentication Server</tt> - .</p>
+    <p>    <tt>Video Authentication Client</tt> - .</p>
+        <p>Download the source code to this app or server code at GitHub.</p>
+        <p><a href="https://github.com/alexxgathp/vap">Video Authentication Protocol Project</a></p>
+    ]]></string>
+    <string name="lessonOne_content"><![CDATA[
+        <h3>Demo One: Select test data to upload.</h3>
+        <p>After downloading the test server, this form can upload
+        a metadata JSON file and video to the test server.</p>
+        <p>In a complete prototype of the framework, a video\'s
+         metadata will do this automatically, record and queue to upload
+         to the device manufacturer\'s datacenter.</p>
+    ]]></string>
+    <string name="lessonOne_user">User</string>
+    <string name="lessonOne_user_hint">Me</string>
+    <string name="lessonOne_comment">Comment</string>
+    <string name="lessonOne_editComment_hint">My comment</string>
+    <string name="lessonOne_reviewed">Reviewed</string>
+    <string name="send_request">Send Request</string>
+    <string name="lessonTwo_content"><![CDATA[
+        <h3>Demo Two: Manufacturer\'s View.</h3>
+    ]]></string>
+    <string name="lessonThree_content"><![CDATA[
+        <h3>Lesson Three: Don\'t Outgrow, Outbuild.</h3>
+    ]]></string>
+    <string name="warning_mapsNotAvailable">
+        Your device does not support Google Maps.
+        Locations will be displayed in a list. To get an interactive map view,
+        use a real device supporting OpenGL ES 2.0. Any model made after 2010 should be fine.</string>
+</resources>

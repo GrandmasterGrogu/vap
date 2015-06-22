@@ -11,14 +11,14 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/strongloop_logo"
         android:scaleType="centerInside"
-        android:src="@drawable/strongloop_logo_reversed_stacked_rgb" />
+        android:src="@drawable/vap_logo" />
 
     <TextView
         android:id="@+id/cover_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:gravity="right"
+        android:gravity="center"
         android:padding="10dp"
         android:scrollHorizontally="false"
         android:selectAllOnFocus="false"
@@ -26,5 +26,12 @@
         android:textColor="@color/dark_foreground"
         android:textStyle="italic"
         android:textSize="16sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_gravity="right|bottom"
+        android:src="@drawable/small_hand"/>
 
 </FrameLayout>

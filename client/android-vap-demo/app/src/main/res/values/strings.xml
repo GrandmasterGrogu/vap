@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Video Authentication Protocol</string>
-    <string name="strongloop_logo">StrongLoop logo</string>
+    <string name="strongloop_logo">VAP logo</string>
     <string name="hint_swipe_right_to_left">(Hint: Swipe right-to-left)</string>
     <string name="finale_content"><![CDATA[
         <h3>Credits</h3>

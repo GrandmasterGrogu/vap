@@ -16,6 +16,8 @@ import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -84,6 +86,88 @@ public class DemoTwo extends HtmlFragment {
 		public void setColor(String color) {
 			this.color = color;
 		}
+    }
+
+    public static class Video extends Model {
+
+        private String name;
+        private JSONObject metadata;
+        private int deviceID;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setMetadata(JSONObject metadata) {
+            this.metadata = metadata;
+        }
+
+        public JSONObject getMetadata() {
+            return metadata;
+        }
+
+        public void setDeviceID(int deviceID) {
+            this.deviceID = deviceID;
+        }
+
+        public int getDeviceID() {
+            return deviceID;
+        }
+
+    }
+
+
+    public static class Device extends Model {
+
+        private String uid;
+        private JSONObject metadata;
+        private int deviceID;
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+
+        public String getUid() {
+            return uid;
+        }
+
+        public void setMetadata(JSONObject metadata) {
+            this.metadata = metadata;
+        }
+
+        public JSONObject getMetadata() {
+            return metadata;
+        }
+
+        public void setDeviceID(int deviceID) {
+            this.deviceID = deviceID;
+        }
+
+        public int getDeviceID() {
+            return deviceID;
+        }
+
+    }
+
+    /**
+     * Our custom ModelRepository subclass. See Lesson One for more information.
+     */
+    public static class VideoRepository extends ModelRepository<Video> {
+        public VideoRepository() {
+            super("video", Video.class);
+        }
+    }
+    /**
+     * Our custom ModelRepository subclass. See Lesson One for more information.
+     */
+    public static class DeviceRepository extends ModelRepository<Device> {
+        public DeviceRepository() {
+            super("device", Device.class);
+        }
     }
 
     /**

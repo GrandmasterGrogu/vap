@@ -15,6 +15,8 @@ import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
 import com.google.common.collect.ImmutableMap;
 
+import org.json.JSONObject;
+
 
 /**
  * Implementation for Lesson One: One Model, Hold the Schema
@@ -57,6 +59,8 @@ public class DemoOne extends HtmlFragment {
 		}
 
 	}
+
+
 
 	/**
 	 * The ModelRepository provides an interface to the Model's "type" on the server. For instance,

@@ -50,4 +50,6 @@
         Locations will be displayed in a list. To get an interactive map view,
         use a real device supporting OpenGL ES 2.0. Any model made after 2010 should be fine.</string>
     <string name="title_front_page">Video Authentication Protocol</string>
+    <string name="select_video_button">Select a Video</string>
+    <string name="select_metadata_button">Select JSON Metadata</string>
 </resources>

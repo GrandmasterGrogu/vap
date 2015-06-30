@@ -14,46 +14,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <TextView
-            style="@style/LabelStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/lessonOne_user" />
-
-        <EditText
-            android:id="@+id/editUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/lessonOne_user_hint"
-            android:inputType="text"
-            android:text="@string/lessonOne_user_hint" >
-
-            <requestFocus />
-        </EditText>
-
-        <TextView
-            style="@style/LabelStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/lessonOne_comment" />
-
-        <EditText
-            android:id="@+id/editCaliber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/lessonOne_editComment_hint"
-            android:inputType="text"
-            android:text="@string/lessonOne_editComment_hint" />
-
-        <CheckBox
-            android:id="@+id/editArmorPiercing"
+        <!-- poor man's spacer -->
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lessonOne_reviewed" />
+            android:text="@string/select_video_button"
+            android:id="@+id/userPickVideo"
+            android:layout_gravity="center_horizontal" />
 
-        <!-- poor man's spacer -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_metadata_button"
+            android:id="@+id/userPickMetadata"
+            android:layout_gravity="center_horizontal" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,5 +1,8 @@
 package com.alexxg.android_vap_demo;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +37,9 @@ public class DemoOne extends HtmlFragment {
 	 * class in a file of its own. We are keeping it as a static nested class only to make
 	 * it easier to follow this guide.
 	 */
+private static boolean videoUploaded = false;
+	private static boolean metadataUploaded = false;
+
 	public static class NoteModel extends Model {
 		private String user;
 		private String comment;
@@ -87,7 +93,18 @@ public class DemoOne extends HtmlFragment {
 	 * Saves the desired Note model to the server with all values pulled from the UI.
 	 */
 	private void sendRequest() {
-	    // 1. Grab the shared RestAdapter instance.
+		String userMsg = "Request Sent.";
+	   // If the video is selected
+		if(!videoUploaded) {
+			userMsg = "Select a video first.";
+		}
+		// and the metadata is selected
+		else if(!metadataUploaded) {
+			userMsg = "Select a metadata file first.";
+		}
+
+	    showResult(userMsg);
+	       /*// 1. Grab the shared RestAdapter instance.
 		GuideApplication app = (GuideApplication)getActivity().getApplication();
 		RestAdapter adapter = app.getLoopBackAdapter();
 
@@ -120,8 +137,56 @@ public class DemoOne extends HtmlFragment {
 				Log.e(getTag(), "Cannot save Note model.", t);
 				showResult("Failed.");
 			}
-		});
+		});*/
 	}
+/* userPickVideo
+* This is the action of the Select a Video button
+* It allows the user to pick a video using the intent ACTION_GET_CONTENT.
+* On a successful selection, The videoUploaded variable is set to true.
+ */
+	private void userPickVideo(){
+		// showResult("Pick a Video");
+		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
+		pickMedia.setType("video/*");
+		startActivityForResult(pickMedia,777);
+	}
+
+/* userPickMetadata
+* This is the action of the Select JSON Metadata button
+* It allows the user to pick a metadata JSON file using the intent ACTION_GET_CONTENT.
+* On a successful selection, The videoUploaded variable is set to true.
+*/
+	private void userPickMetadata(	)
+	{//showResult("Pick a Metadata File");
+
+		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
+		pickMedia.setType("application/json");
+		startActivityForResult(pickMedia,888);
+		}
+
+
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 777) {
+			if (resultCode == Activity.RESULT_OK) {
+				Uri selectedVideoLocation = data.getData();
+                  showResult(selectedVideoLocation.toString());
+				// Do something with the data...
+				videoUploaded = true;
+			}
+		}
+
+		if (requestCode == 888) {
+			if (resultCode == Activity.RESULT_OK) {
+				Uri selectedJSONLocation = data.getData();
+				showResult(selectedJSONLocation.toString());
+				// Do something with the data...
+				metadataUploaded = true;
+			}
+		}
+	}
+
 
 	void showResult(String message) {
 		Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
@@ -138,26 +203,45 @@ public class DemoOne extends HtmlFragment {
         setRootView((ViewGroup) inflater.inflate(
         		R.layout.fragment_demo_one, container, false));
 
-        setHtmlText(R.id.content, R.string.lessonOne_content);
+		setHtmlText(R.id.content, R.string.lessonOne_content);
 
-        installButtonClickHandler();
-
+		installSendRequestButtonClickHandler();
+		installUserPickVideoButtonClickHandler();
+		installUserPickMetadataButtonClickHandler();
         return getRootView();
 	}
 
-	private void installButtonClickHandler() {
+	private void installSendRequestButtonClickHandler() {
 		final Button button = (Button) getRootView().findViewById(R.id.sendRequest);
         button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                sendRequest();
-            }
-        });
+			public void onClick(View v) {
+				sendRequest();
+			}
+		});
+	}
+
+	private void installUserPickVideoButtonClickHandler() {
+		final Button button = (Button) getRootView().findViewById(R.id.userPickVideo);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				userPickVideo();
+			}
+		});
+	}
+
+	private void installUserPickMetadataButtonClickHandler() {
+		final Button button = (Button) getRootView().findViewById(R.id.userPickMetadata);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				userPickMetadata();
+			}
+		});
 	}
 
 	//
 	// Properties for accessing form values
 	//
-
+/*
 	private String getUser() {
 		final EditText widget = (EditText) getRootView().findViewById(R.id.editUser);
 		return widget.getText().toString();
@@ -171,5 +255,5 @@ public class DemoOne extends HtmlFragment {
 	private Boolean isReviewed() {
 		final CheckBox widget = (CheckBox) getRootView().findViewById(R.id.editArmorPiercing);
 		return widget.isChecked();
-	}
+	}*/
 }

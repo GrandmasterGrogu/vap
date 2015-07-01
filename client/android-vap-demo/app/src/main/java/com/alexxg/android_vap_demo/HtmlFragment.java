@@ -2,6 +2,7 @@ package com.alexxg.android_vap_demo;
 
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -19,7 +20,9 @@ public class HtmlFragment extends Fragment {
 	protected void setHtmlText(int textViewId, int stringResourceId) {
 	    TextView text = (TextView)getRootView().findViewById(textViewId);
 	    String htmlContent = getString(stringResourceId);
-	    text.setText(Html.fromHtml(htmlContent));
+		text.setText(Html.fromHtml(htmlContent));
+		text.setMovementMethod(LinkMovementMethod.getInstance());
+
 	}
 
 }

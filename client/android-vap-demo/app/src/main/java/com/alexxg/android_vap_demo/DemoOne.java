@@ -160,7 +160,7 @@ private static boolean videoUploaded = false;
 	{//showResult("Pick a Metadata File");
 
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
-		pickMedia.setType("application/json");
+		pickMedia.setType("application/octet-stream");
 		startActivityForResult(pickMedia,888);
 		}
 

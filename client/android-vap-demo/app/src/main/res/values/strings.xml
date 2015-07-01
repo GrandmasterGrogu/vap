@@ -19,19 +19,25 @@
         <p>The purpose of the demo is to demonstrate a new model for
         non-repudiation, integrity and authentication of videos.
         This means someone can prove that a video was recorded by their device.</p>
-        <p>The protocol works by interacting components provided by the device manufacturer.</p>
-    <p>    <tt>Video Authentication Server</tt> - .</p>
-    <p>    <tt>Video Authentication Client</tt> - .</p>
-        <p>Download the source code to this app or server code at GitHub.</p>
+        <p>This occurs in three steps: </p>
+        <ol>
+        <li>The camera device registers itself with the manufacturer\'s database.</li>
+        <li>For every video, the device sends a \"record\" request with metadata to the manufacturer.</li>
+        <li>The manufacturer sends a \"confirm\" request to a hardware-protected key store and metadata storage on the camera that sends a reply back.</li>
+        </ol>
+
+        <p>In other words, the protocol works by interacting components provided by the device manufacturer.</p>
+    <p>    <tt>Video Authentication Server</tt> - This is a remote database owned by the manufacturer that stores video and device metadata.</p>
+    <p>    <tt>Video Authentication Client</tt> - The client device with the camera.  This app simulates the function of a hardware chip that communicates to the server.</p>
+        <p>Download the Java source code to this app or  NodeJS / MySQL server code at GitHub.</p>
         <p><a href="https://github.com/alexxgathp/vap">Video Authentication Protocol Project</a></p>
     ]]></string>
     <string name="lessonOne_content"><![CDATA[
         <h3>Demo One: Select test data to upload.</h3>
         <p>After downloading the test server, this form can upload
-        a metadata JSON file and video to the test server.</p>
+        a metadata JSON file exported by <a href="https://guardianproject.info/informa/">Informacam</a> and a video to the test server.</p>
         <p>In a complete prototype of the framework, a video\'s
-         metadata will do this automatically, record and queue to upload
-         to the device manufacturer\'s datacenter.</p>
+         metadata will be generated automatically, request to be recorded and verified by device manufacturer\'s datacenter.</p>
     ]]></string>
     <string name="lessonOne_user">User</string>
     <string name="lessonOne_user_hint">Me</string>

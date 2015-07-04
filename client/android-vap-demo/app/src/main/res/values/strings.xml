@@ -46,7 +46,7 @@
     <string name="lessonOne_reviewed">Reviewed</string>
     <string name="send_request">Send Request</string>
     <string name="lessonTwo_content"><![CDATA[
-        <h3>Demo Two: Manufacturer\'s View.</h3>
+        <h3>Demo Two: Manufacturer\'s Database.</h3>
     ]]></string>
     <string name="lessonThree_content"><![CDATA[
         <h3>Lesson Three: Don\'t Outgrow, Outbuild.</h3>
@@ -58,4 +58,6 @@
     <string name="title_front_page">Video Authentication Protocol</string>
     <string name="select_video_button">Select a Video</string>
     <string name="select_metadata_button">Select JSON Metadata</string>
+    <string name="device_button">See the Devices</string>
+    <string name="video_button">See the Videos</string>
 </resources>

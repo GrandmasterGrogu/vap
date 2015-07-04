@@ -4,6 +4,10 @@
     "connector": "memory"
   },
   "media_history": {
+  "host": "localhost",
+  "database": "media_history",
+    "username": "root",
+    "password": "",
     "name": "media_history",
     "connector": "mysql"
   }

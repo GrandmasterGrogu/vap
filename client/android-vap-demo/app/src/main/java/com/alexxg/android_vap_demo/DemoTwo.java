@@ -2,7 +2,6 @@ package com.alexxg.android_vap_demo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.strongloop.android.loopback.RestAdapter;
 
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -90,16 +90,16 @@ public class DemoTwo extends HtmlFragment {
 
     public static class Video extends Model {
 
-        private String name;
+        private int videoID;
         private JSONObject metadata;
         private int deviceID;
 
-        public void setName(String name) {
-            this.name = name;
+        public void setVideoID(int videoID) {
+            this.videoID = videoID;
         }
 
-        public String getName() {
-            return name;
+        public int getVideoID() {
+            return videoID;
         }
 
         public void setMetadata(JSONObject metadata) {
@@ -197,31 +197,60 @@ public class DemoTwo extends HtmlFragment {
      * to a Mongo data source, while connecting a legacy model (e.g. this Car example) to
      * an Oracle data source.
      */
-    private void sendRequest() {
+    private void viewVideos() {
         // 1. Grab the shared RestAdapter instance.
         GuideApplication app = (GuideApplication)getActivity().getApplication();
         RestAdapter adapter = app.getLoopBackAdapter();
 
-        // 2. Instantiate our CarRepository.See LessonOneView for further discussion.
-        CarRepository repository = adapter.createRepository(CarRepository.class);
+        // 2. Instantiate our VideoRepository.
+        VideoRepository repository = adapter.createRepository(VideoRepository.class);
 
         // 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
         //    the server for all Cars, filling out our ListView with the results. In this case,
         //    the Repository is really the workhorse; the Model is just a simple container.
 
-        repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.CarModel>() {
+        repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Video>() {
             @Override
-            public void onSuccess(List<CarModel> models) {
-                list.setAdapter(new CarListAdapter(getActivity(), models));
+            public void onSuccess(List<Video> models) {
+                list.setAdapter(new VideoListAdapter(getActivity(), models));
             }
 
             @Override
             public void onError(Throwable t) {
-                Log.e(getTag(), "Cannot save Note model.", t);
+               // Log.e(getTag(), "Cannot save Note model.", t);
                 showResult("Failed.");
+                showResult(t.toString());
             }
         });
     }
+
+    private void viewDevices() {
+        // 1. Grab the shared RestAdapter instance.
+        GuideApplication app = (GuideApplication)getActivity().getApplication();
+        RestAdapter adapter = app.getLoopBackAdapter();
+
+        // 2. Instantiate our VideoRepository.
+        DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
+
+        // 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
+        //    the server for all Cars, filling out our ListView with the results. In this case,
+        //    the Repository is really the workhorse; the Model is just a simple container.
+
+        repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Device>() {
+            @Override
+            public void onSuccess(List<Device> models) {
+                list.setAdapter(new DeviceListAdapter(getActivity(), models));
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // Log.e(getTag(), "Cannot save Note model.", t);
+                showResult("Failed.");
+                showResult(t.toString());
+            }
+        });
+    }
+
 
     private void showResult(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
@@ -230,8 +259,8 @@ public class DemoTwo extends HtmlFragment {
     /**
      * Basic ListAdapter implementation using our custom Model type.
      */
-    private static class CarListAdapter extends ArrayAdapter<CarModel> {
-        public CarListAdapter(Context context, List<CarModel> list) {
+    private static class VideoListAdapter extends ArrayAdapter<Video> {
+        public VideoListAdapter(Context context, List<Video> list) {
             super(context, 0, list);
         }
 
@@ -242,17 +271,45 @@ public class DemoTwo extends HtmlFragment {
                         android.R.layout.simple_list_item_1, null);
             }
 
-            CarModel model = getItem(position);
+            Video model = getItem(position);
             if (model == null) return convertView;
 
             TextView textView = (TextView)convertView.findViewById(
                     android.R.id.text1);
-            textView.setText(
-                    model.getModel() + " - " + model.getYear());
+            Object [] arguments = {String.valueOf(model.getVideoID()),String.valueOf(model.getDeviceID())};
+            textView.setText(MessageFormat.format("Video {0} from Device {1}", arguments));
 
             return convertView;
         }
     }
+
+    /**
+     * Basic ListAdapter implementation using our custom Model type.
+     */
+    private static class DeviceListAdapter extends ArrayAdapter<Device> {
+        public DeviceListAdapter(Context context, List<Device> list) {
+            super(context, 0, list);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        android.R.layout.simple_list_item_1, null);
+            }
+
+            Device model = getItem(position);
+            if (model == null) return convertView;
+
+            TextView textView = (TextView)convertView.findViewById(
+                    android.R.id.text1);
+            Object [] arguments = {String.valueOf(model.getDeviceID())};
+            textView.setText(MessageFormat.format("Device {0}", arguments));
+
+            return convertView;
+        }
+    }
+
 
     //
     // GUI glue
@@ -270,16 +327,25 @@ public class DemoTwo extends HtmlFragment {
 
         setHtmlText(R.id.content, R.string.lessonTwo_content);
 
-        installButtonClickHandler();
-
+        installButtonClickHandlerViewVideos();
+        installButtonClickHandlerViewDevices();
         return getRootView();
     }
 
-    private void installButtonClickHandler() {
-        final Button button = (Button) getRootView().findViewById(R.id.sendRequest);
+    private void installButtonClickHandlerViewVideos() {
+        final Button button = (Button) getRootView().findViewById(R.id.viewVideos);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sendRequest();
+                viewVideos();
+            }
+        });
+    }
+
+    private void installButtonClickHandlerViewDevices() {
+        final Button button = (Button) getRootView().findViewById(R.id.viewDevices);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                viewDevices();
             }
         });
     }

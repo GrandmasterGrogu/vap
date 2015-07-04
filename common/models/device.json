@@ -38,7 +38,7 @@
         "nullable": "NO"
       }
     },
-		    "metadata": {
+	"metadata": {
       "type": "String",
       "required": false,
       "length": 65000,

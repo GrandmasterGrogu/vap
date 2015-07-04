@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Video Authentication Protocol</string>
+    <string name="app_name">VAP</string>
     <string name="strongloop_logo">VAP logo</string>
     <string name="hint_swipe_right_to_left">(Hint: Swipe right-to-left)</string>
     <string name="finale_content"><![CDATA[
         <h3>Credits</h3>
-        <p>Author: Alex X. Galloway</p>
+        <p><b>Author</b></br> Alex X. Galloway</p>
            ]]></string>
     <string name="finale_callToAction"><![CDATA[
         <p>For more info on the framework:<p>

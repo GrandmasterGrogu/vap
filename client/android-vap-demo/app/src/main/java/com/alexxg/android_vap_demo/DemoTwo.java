@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -325,6 +326,22 @@ public class DemoTwo extends HtmlFragment {
 
         list = (ListView)getRootView().findViewById(R.id.list);
 
+
+        list.setClickable(true);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
+
+                Object o = list.getItemAtPosition(position);
+                showResult(o.toString());
+    /* write you handling code like...
+    String st = "sdcard/";
+    File f = new File(st+o.toString());
+    // do whatever u want to do with 'f' File object
+    */
+            }
+        });
         setHtmlText(R.id.content, R.string.lessonTwo_content);
 
         installButtonClickHandlerViewVideos();

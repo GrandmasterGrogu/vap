@@ -17,7 +17,8 @@
      "loopback-datasource-juggler": "latest",
     "loopback-connector-mysql": "latest",
     "strong-express-metrics": "^1.1.0",
-    "serve-favicon": "^2.0.1"
+    "serve-favicon": "^2.0.1",
+	"ecdsa": "latest"
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"

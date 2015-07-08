@@ -16,9 +16,9 @@
     },
     "urlencoded": {
       "extended": true,
-      "limit": "100kb"
+      "limit": "50mb"
     },
-    "cors": false,
+    "cors": true,
     "errorHandler": {
       "disableStackTrace": false
     }

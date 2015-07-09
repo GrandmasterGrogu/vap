@@ -5,7 +5,8 @@ var app = module.exports = loopback();
 
 app.start = function() {
   // start the web server
-  return app.listen(function() {
+  var port = process.env.PORT || 5000;
+  return app.listen(port, function() {
     app.emit('started');
     console.log('Web server listening at: %s', app.get('url'));
   });

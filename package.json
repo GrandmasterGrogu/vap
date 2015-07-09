@@ -5,15 +5,20 @@
   "scripts": {
     "pretest": "jshint ."
   },
+  "engines": {
+        "node": "0.12.x"
+    },
   "dependencies": {
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "errorhandler": "^1.1.1",
     "loopback": "^2.14.0",
     "loopback-boot": "^2.6.5",
-    "loopback-datasource-juggler": "^2.19.0",
+     "loopback-datasource-juggler": "latest",
+    "loopback-connector-mysql": "latest",
     "strong-express-metrics": "^1.1.0",
-    "serve-favicon": "^2.0.1"
+    "serve-favicon": "^2.0.1",
+	"ecdsa": "latest"
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"

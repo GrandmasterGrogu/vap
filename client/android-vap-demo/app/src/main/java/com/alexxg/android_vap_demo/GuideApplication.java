@@ -16,9 +16,18 @@ public class GuideApplication extends Application {
             // However, some applications will need to talk to more than one
             // server - create as many Adapters as you need.
             adapter = new RestAdapter(
-                    getApplicationContext(), "http://10.0.2.2:3000/api");
 
-            // This boilerplate is required for Lesson Three.
+
+        // Uncomment the line below to try it with a Localhost server instance
+        // getApplicationContext(), "http://10.0.2.2:3000/api");
+
+        // Test with the Heroku account (Currently unavailable)
+       //  getApplicationContext(), "http://shielded-hollows-8250.herokuapp.com/api");
+
+        // Uncomment the line below to try it with the Test AmazonEC2 account
+         getApplicationContext(), "http://54.165.11.24:3000/api");
+
+        // This boilerplate is required for Lesson Three.
             adapter.getContract().addItem(
                     new RestContractItem("locations/nearby", "GET"),
                     "location.nearby");

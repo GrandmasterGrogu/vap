@@ -16,7 +16,10 @@
       "extended": true,
       "limit": "50mb"
     },
-    "cors": true,
+    "cors": {
+      "origin": true,
+      "credentials": true
+    },
     "errorHandler": {
       "disableStackTrace": false
     }

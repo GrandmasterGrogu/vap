@@ -10,8 +10,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
+import com.strongloop.android.loopback.callbacks.VoidCallback;
+import com.strongloop.android.remoting.adapters.Adapter;
+import com.strongloop.android.remoting.adapters.RestContract;
+import com.strongloop.android.remoting.adapters.RestContractItem;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -81,6 +91,144 @@ private static boolean videoUploaded = false;
 			super("note", "notes", NoteModel.class);
 		}
 	}
+
+	public static class Video extends Model {
+
+		private int videoID;
+		private String metadata;
+		private int deviceID;
+
+		public void setVideoID(int videoID) {
+			this.videoID = videoID;
+		}
+
+		public int getVideoID() {
+			return videoID;
+		}
+
+		public void setMetadata(String metadata) {
+			this.metadata = metadata;
+		}
+
+		public String getMetadata() {
+			return metadata;
+		}
+
+		public void setDeviceID(int deviceID) {
+			this.deviceID = deviceID;
+		}
+
+		public int getDeviceID() {
+			return deviceID;
+		}
+
+	}
+
+
+	public static class Device extends Model {
+
+		private String uid;
+		private String metadata;
+		private int deviceID;
+
+		public void setUid(String uid) {
+			this.uid = uid;
+		}
+
+		public String getUid() {
+			return uid;
+		}
+
+		public void setMetadata(String metadata) {
+			this.metadata = metadata;
+		}
+
+		public String getMetadata() {
+			return metadata;
+		}
+
+		public void setDeviceID(int deviceID) {
+			this.deviceID = deviceID;
+		}
+
+		public int getDeviceID() {
+			return deviceID;
+		}
+
+	}
+
+	/**
+	 * Our custom ModelRepository subclass. See Lesson One for more information.
+	 */
+	public static class VideoRepository extends ModelRepository<Video> {
+		public VideoRepository() {
+			super("video", Video.class);
+		}
+			public RestContract createContract() {
+				RestContract contract = super.createContract();
+
+				contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/greet", "POST"),
+						getClassName() + ".greet");
+
+				return contract;
+			}
+
+			public void greet(String metadata, int purpose, final VoidCallback callback) {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("purpose", purpose);
+				params.put("metadata", metadata);
+				invokeStaticMethod("greet", params, new Adapter.Callback() {
+
+					@Override
+					public void onError(Throwable t) {
+						callback.onError(t);
+					}
+
+					@Override
+					public void onSuccess(String response) {
+						callback.onSuccess();
+					}
+				});
+			}
+
+	}
+	/**
+	 * Our custom ModelRepository subclass. See Lesson One for more information.
+	 */
+	public static class DeviceRepository extends ModelRepository<Device> {
+		public DeviceRepository() {
+			super("device", Device.class);
+		}
+
+		public RestContract createContract() {
+			RestContract contract = super.createContract();
+
+			contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/greet", "POST"),
+					getClassName() + ".greet");
+
+			return contract;
+		}
+
+		public void greet(String deviceIdentifier, String purpose, final VoidCallback callback) {
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("purpose", purpose);
+			params.put("deviceIdentifier", deviceIdentifier);
+			invokeStaticMethod("greet", params, new Adapter.Callback() {
+
+				@Override
+				public void onError(Throwable t) {
+					callback.onError(t);
+				}
+
+				@Override
+				public void onSuccess(String response) {
+					callback.onSuccess();
+				}
+			});
+		}
+	}
+
+
 
 	/**
 	 * Saves the desired Note model to the server with all values pulled from the UI.

@@ -92,7 +92,7 @@ public class DemoTwo extends HtmlFragment {
     public static class Video extends Model {
 
         private int videoID;
-        private JSONObject metadata;
+        private String metadata;
         private int deviceID;
 
         public void setVideoID(int videoID) {
@@ -103,11 +103,11 @@ public class DemoTwo extends HtmlFragment {
             return videoID;
         }
 
-        public void setMetadata(JSONObject metadata) {
+        public void setMetadata(String metadata) {
             this.metadata = metadata;
         }
 
-        public JSONObject getMetadata() {
+        public String getMetadata() {
             return metadata;
         }
 
@@ -125,7 +125,7 @@ public class DemoTwo extends HtmlFragment {
     public static class Device extends Model {
 
         private String uid;
-        private JSONObject metadata;
+        private String metadata;
         private int deviceID;
 
         public void setUid(String uid) {
@@ -136,11 +136,11 @@ public class DemoTwo extends HtmlFragment {
             return uid;
         }
 
-        public void setMetadata(JSONObject metadata) {
+        public void setMetadata(String metadata) {
             this.metadata = metadata;
         }
 
-        public JSONObject getMetadata() {
+        public String getMetadata() {
             return metadata;
         }
 

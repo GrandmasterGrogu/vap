@@ -25,7 +25,7 @@ public class GuideApplication extends Application {
        //  getApplicationContext(), "http://shielded-hollows-8250.herokuapp.com/api");
 
         // Uncomment the line below to try it with the Test AmazonEC2 account
-         getApplicationContext(), "http://54.165.11.24:3000/api");
+         getApplicationContext(), "https://54.165.11.24:3000/api");
 
         // This boilerplate is required for Lesson Three.
             adapter.getContract().addItem(

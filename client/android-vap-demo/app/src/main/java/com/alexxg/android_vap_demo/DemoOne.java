@@ -245,6 +245,22 @@ private static boolean videoUploaded = false;
 		}
 
 	    showResult(userMsg);
+		// Retrieve secret device ID and secret token
+		getSecretDeviceId();
+		getSecretDeviceToken();
+		// Or retrieve hardware identifier if those are missing.
+		getHWID();
+		// Check some value to see if it is registered.
+        // deviceModelInstance.greet(REGISTER_VALUE)...
+		// If it isn't, register device.
+	//	deviceModelInstance.greet(CONFIRM_REGISTER_VALUE)...
+		// Then follow same group of functions, if had been already registered.
+		//
+		// If it is already registered, send device request with metadata including video hash.
+	//	videoModelInstance.greet(RECORD_VALUE)...
+
+	//	videoModelInstance.greet(CONFIRM_RECORD_VALUE)...
+		// Check token against secret value and replace with new one. Send response back if successful or not.
 	       /*// 1. Grab the shared RestAdapter instance.
 		GuideApplication app = (GuideApplication)getActivity().getApplication();
 		RestAdapter adapter = app.getLoopBackAdapter();

@@ -43,54 +43,6 @@ public class DemoOne extends HtmlFragment {
 private static boolean videoUploaded = false;
 	private static boolean metadataUploaded = false;
 
-	public static class NoteModel extends Model {
-		private String user;
-		private String comment;
-		private Boolean reviewed;
-
-		public String getUser() {
-			return user;
-		}
-		public void setUser(String user) {
-			this.user = user;
-		}
-		public String getComment() {
-			return comment;
-		}
-		public void setComment(String comment) {
-			this.comment = comment;
-		}
-		public Boolean getReviewed() {
-			return reviewed;
-		}
-		public void setReviewed(Boolean reviewed) {
-			this.reviewed = reviewed;
-		}
-
-	}
-
-
-
-	/**
-	 * The ModelRepository provides an interface to the Model's "type" on the server. For instance,
-	 * we'll (SPOILER!) see in Lessons Two how the ModelRepository is used for queries;
-	 * in Lesson Three we'll use it for custom, collection-level behaviour: those locations within
-	 * the collection closest to the given coordinates.
-	 *
-	 * This subclass, however, provides an additional benefit: it acts as glue within the LoopBack
-	 * interface between a RestAdapter representing the _server_ and a named collection or
-	 * type of model within it. In this case, that type of model is named "note", and it contains
-	 * NoteModel instances.
-	 *
-	 * Note: in a regular application, this class would be defined as top-level (non-static)
-	 * class in a file of its own. We are keeping it as a static nested class only to make
-	 * it easier to follow this guide.
-	 */
-	public static class NoteRepository extends ModelRepository<NoteModel> {
-		public NoteRepository() {
-			super("note", "notes", NoteModel.class);
-		}
-	}
 
 	public static class Video extends Model {
 
@@ -249,7 +201,7 @@ private static boolean videoUploaded = false;
 		getSecretDeviceId();
 		getSecretDeviceToken();
 		// Or retrieve hardware identifier if those are missing.
-		getHWID();
+		gethwID();
 		// Check some value to see if it is registered.
         // deviceModelInstance.greet(REGISTER_VALUE)...
 		// If it isn't, register device.

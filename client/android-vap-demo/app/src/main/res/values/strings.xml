@@ -32,6 +32,25 @@
         <p>Download the Java source code to this app or  NodeJS / MySQL server code at GitHub.</p>
         <p><a href="https://github.com/alexxgathp/vap">Video Authentication Protocol Project</a></p>
     ]]></string>
+       <string name="registration_content"><![CDATA[
+        <h1>Device Registration</h1>
+        <p>Communication is initiated by the device requesting registration and providing required metadata.
+        The manufacturer responds by registering the device and its hardware chip, generating a secret device ID and token.
+        The manufacturer sends an encrypted communication, with the secret ID and  token, that can only be decrypted by the public key
+        on the hardware chip that physically protects it from being accessed by a user.</p>
+        <p>If there is no token and ID, the device stores both and sends an encrypted confirmation to the cloud service of the manufacturer.
+        The device also sends with each communication an identifier.
+        </p>
+    ]]></string>
+       <string name="android_device_id"><![CDATA[
+        <b>Device ID: </b>
+    ]]></string>
+     <string name="vap_secret_id"><![CDATA[
+        <b>VAP Secret ID: </b>
+    ]]></string>
+     <string name="vap_token"><![CDATA[
+        <b>VAP Token: </b>
+    ]]></string>
     <string name="lessonOne_content"><![CDATA[
         <h3>Demo One: Select test data to upload.</h3>
         <p>After downloading the test server, this form can upload
@@ -64,4 +83,5 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="back_button">Back</string>
+    <string name="this_android_device_label">This Android Device</string>
 </resources>

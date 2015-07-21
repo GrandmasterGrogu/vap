@@ -2,6 +2,8 @@ package com.alexxg.android_vap_demo;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.text.Html;
@@ -13,6 +15,7 @@ public class HtmlFragment extends Fragment {
 	public static final String VAP_FILE = "VideoAuthenticationProtcol_Simulation_File";
 	public static final String SECRET_DEVICE_ID = "SDI";
 	public static final String SECRET_TOKEN = "ST";
+	public static final String UNKNOWN = "Unknown";
 	/* Secret Device ID
     This is the ID value the is used to communication to the manufacturer's cloud.
     It is created at registration. On the device, it would be stored on a hardware chip
@@ -33,18 +36,6 @@ The token value is created by the last communication and protects against replay
 
 	public HtmlFragment() {
 		super();
-		// Get Device Hardware ID
-       /* TelephonyManager mTelephonyMgr;
-        mTelephonyMgr = Context.getSystemService(Context.TELEPHONY_SERVICE);
-        mTelephonyMgr.getDeviceId();*/
-        setDeviceId("Test ID");
-		// Restore app preferences / data / settings
-		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-
-		String id = settings.getString(SECRET_DEVICE_ID, false);
-		String token = settings.getString(SECRET_TOKEN, false);
-		setSecretDeviceId(id);
-		setSecretDeviceToken(token);
 	}
 
 	protected String getSecretDeviceId(){ return secretDeviceId;}
@@ -63,4 +54,21 @@ The token value is created by the last communication and protects against replay
 
 	}
 
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		// Get Device Hardware ID
+       /* TelephonyManager mTelephonyMgr;
+        mTelephonyMgr = Context.getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyMgr.getDeviceId();*/
+
+		// Restore app preferences / data / settings
+		context = getActivity().getApplicationContext();
+		setDeviceId(Settings.Secure.getString(context.getContentResolver(),
+				Settings.Secure.ANDROID_ID));
+		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
+		String id = settings.getString(SECRET_DEVICE_ID, UNKNOWN);
+		String token = settings.getString(SECRET_TOKEN, UNKNOWN);
+		setSecretDeviceId(id);
+		setSecretDeviceToken(token);
+	}
 }

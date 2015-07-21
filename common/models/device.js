@@ -3,10 +3,16 @@ var ecdsa = require('ecdsa') // Elliptical Curve Digital Signatures
 module.exports = function (Device) {
     var constants = {
 		REGISTER : 0,
-        CONFIRM_REGISTER : 1
+        CONFIRM_REGISTER : 1,
+		HARDWARE_RESET : 2
     };
 	
 	// A function to return a Public Key for a non-registered device.
+	function generatePublicKey(deviceIdentifier){
+		
+	}
+	
+		// A function to generate a token for a registered device.
 	function generatePublicKey(deviceIdentifier){
 		
 	}
@@ -14,13 +20,11 @@ module.exports = function (Device) {
 
     Device.greet = function (deviceIdentifier, purpose, cb) {
         //console.log(Device);
-		generatePublicKey(deviceIdentifier);
-        Device.app.models.Container.download('Devicecript', 'test.py', {"type":"text/plain"},function (err,res) {
-            if (err) {
-            }else{
-            cb(null, res);
-            }
-        });
+		var pubkey = generatePublicKey(deviceIdentifier);
+		var token = generateToken(deviceIdentifier);
+      
+            cb(null, pubkey, token);
+        
         	}; 
 
 			
@@ -32,8 +36,8 @@ module.exports = function (Device) {
     Device.remoteMethod(
         'greet', 
         {
-          accepts: [{arg: 'deviceIdentifier', type: 'string'}, {arg: 'purpose', type: 'number'}],
-          returns: {arg: 'publickey', type: 'string'}
+          accepts: [{arg: 'deviceIdentifier', type: 'string'}, {arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
+          returns: [{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}]
         }
     );
 

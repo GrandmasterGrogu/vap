@@ -9,19 +9,16 @@ module.exports = function(Video) {
 // A function to record a video's metadata
 
     Video.greet = function (metadata, purpose, cb) {
-        Video.app.models.Container.download('Videocript', 'test.py', {"type":"text/plain"},function (err,res) {
-            if (err) {
-            }else{
+       
             cb(null, res);
-            }
-        });
+        
         	}; 
      
     Video.remoteMethod(
         'greet', 
         {
           accepts: [{arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
-          returns: {arg: 'greeting', type: 'string'}
+          returns: [{arg: 'token', type: 'string'}, {arg: 'oldtoken', type: 'string'}, {arg: 'purpose', type: 'number'}]
         }
     );
 

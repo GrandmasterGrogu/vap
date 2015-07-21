@@ -51,6 +51,15 @@
      <string name="vap_token"><![CDATA[
         <b>VAP Token: </b>
     ]]></string>
+       <string name="vap_old_token"><![CDATA[
+        <b>VAP Previous Token: </b>
+    ]]></string>
+     <string name="privatekey"><![CDATA[
+        <b>Private Key: </b>
+    ]]></string>
+     <string name="metadata"><![CDATA[
+        <b>Metadata: </b>
+    ]]></string>
     <string name="lessonOne_content"><![CDATA[
         <h3>Demo One: Select test data to upload.</h3>
         <p>After downloading the test server, this form can upload

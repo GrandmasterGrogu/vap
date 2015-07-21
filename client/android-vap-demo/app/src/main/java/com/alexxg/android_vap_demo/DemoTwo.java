@@ -2,6 +2,7 @@ package com.alexxg.android_vap_demo;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -333,8 +334,10 @@ public class DemoTwo extends HtmlFragment {
             @Override
             public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
 
-                Object o = list.getItemAtPosition(position);
-                showResult(o.toString());
+                Device model = (Device)list.getItemAtPosition(position);
+                showResult(model.toString());
+               // FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+               // fragmentTransaction.add(R.id.root_layout, item_display.newInstance(o.deviceID, o.uid, o.token, o.oldtoken, o.metadata, o.privatekey));
     /* write you handling code like...
     String st = "sdcard/";
     File f = new File(st+o.toString());

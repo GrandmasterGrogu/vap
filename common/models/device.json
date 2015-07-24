@@ -38,14 +38,14 @@
         "nullable": "NO"
       }
     },
-	  "privatekey": {
+	  "publickey": {
       "type": "String",
       "required": false,
       "length": 255,
       "precision": null,
       "scale": null,
       "mysql": {
-        "columnName": "privatekey",
+        "columnName": "publickey",
         "dataType": "varchar",
         "dataLength": 255,
         "dataPrecision": null,

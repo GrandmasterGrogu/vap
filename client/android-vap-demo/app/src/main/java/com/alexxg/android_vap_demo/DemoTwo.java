@@ -1,6 +1,7 @@
 package com.alexxg.android_vap_demo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -27,68 +28,12 @@ import java.util.List;
  */
 public class DemoTwo extends HtmlFragment {
 
-    /**
-     * Unlike Lesson One, our CarModel class is based _entirely_ on an existing schema.
-     *
-     * In this case, every field in Oracle that's defined as a NUMBER type becomes a Number,
-     * and each field defined as a VARCHAR2 becomes a String.
-     *
-     * When we load these models from Oracle, LoopBack uses these property setters and getters
-     * to know what data we care about. If we left off `extras`, for example, LoopBack would
-     * simply omit that field.
-     */
-    public static class CarModel extends Model {
-    	private String vin;
-    	private int year;
-    	private String make;
-    	private String model;
-    	private String image;
-    	private String carClass;
-    	private String color;
-
-    	public String getVin() {
-			return vin;
-		}
-		public void setVin(String vin) {
-			this.vin = vin;
-		}
-		public int getYear() {
-			return year;
-		}
-		public void setYear(int year) {
-			this.year = year;
-		}
-		public String getMake() {
-			return make;
-		}
-		public void setMake(String make) {
-			this.make = make;
-		}
-		public String getModel() {
-			return model;
-		}
-		public void setModel(String model) {
-			this.model = model;
-		}
-		public String getImage() {
-			return image;
-		}
-		public void setImage(String image) {
-			this.image = image;
-		}
-		public String getCarClass() {
-			return carClass;
-		}
-		public void setCarClass(String carClass) {
-			this.carClass = carClass;
-		}
-		public String getColor() {
-			return color;
-		}
-		public void setColor(String color) {
-			this.color = color;
-		}
-    }
+    private static final String SDID = "SECRET_DEVICE_ID";
+    private static final String DID = "DEVICE_ID";
+    private static final String TOKEN = "TOKEN";
+    private static final String OLD_TOKEN = "OLD_TOKEN";
+    private static final String MDATA = "METADATA";
+    private static final String PK = "PUBLIC_KEY";
 
     public static class Video extends Model {
 
@@ -126,6 +71,9 @@ public class DemoTwo extends HtmlFragment {
     public static class Device extends Model {
 
         private String uid;
+        private String token;
+        private String oldtoken;
+        private String publickey;
         private String metadata;
         private int deviceID;
 
@@ -135,6 +83,30 @@ public class DemoTwo extends HtmlFragment {
 
         public String getUid() {
             return uid;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setOldToken(String oldtoken) {
+            this.oldtoken = oldtoken;
+        }
+
+        public String getOldToken() {
+            return oldtoken;
+        }
+
+        public void setPublicKey(String publickey) {
+            this.publickey = publickey;
+        }
+
+        public String getPublicKey() {
+            return publickey;
         }
 
         public void setMetadata(String metadata) {
@@ -172,14 +144,6 @@ public class DemoTwo extends HtmlFragment {
         }
     }
 
-    /**
-     * Our custom ModelRepository subclass. See Lesson One for more information.
-     */
-    public static class CarRepository extends ModelRepository<CarModel> {
-        public CarRepository() {
-            super("car", CarModel.class);
-        }
-    }
 
     /**
      * Loads all Car models from the server. To make full use of this, return to your (running)
@@ -335,9 +299,24 @@ public class DemoTwo extends HtmlFragment {
             public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
 
                 Device model = (Device)list.getItemAtPosition(position);
-                showResult(model.toString());
-               // FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-               // fragmentTransaction.add(R.id.root_layout, item_display.newInstance(o.deviceID, o.uid, o.token, o.oldtoken, o.metadata, o.privatekey));
+                //showResult(model.getUid());
+
+                Intent intent = new Intent(getActivity(),ItemDetails.class);
+                intent.putExtra(SDID,model.getDeviceID());
+                intent.putExtra(DID,model.getUid());
+                intent.putExtra(TOKEN,model.getToken());
+                intent.putExtra(OLD_TOKEN,model.getOldToken());
+                intent.putExtra(MDATA,model.getMetadata());
+                intent.putExtra(PK,model.getPublicKey());
+
+                startActivity(intent);
+
+                // Tried writing code to start as fragment. did not work...
+           /*    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+               // fragmentTransaction.add(R.id.verticallayout, item_display.newInstance(Integer.toString(model.getDeviceID()), model.getUid(), model.getToken(), model.getOldToken(), model.getMetadata(), model.getPublicKey()));
+                fragmentTransaction.replace(R.id.topframe, item_display.newInstance(Integer.toString(model.getDeviceID()), model.getUid(), model.getToken(), model.getOldToken(), model.getMetadata(), model.getPublicKey()));
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();*/
     /* write you handling code like...
     String st = "sdcard/";
     File f = new File(st+o.toString());

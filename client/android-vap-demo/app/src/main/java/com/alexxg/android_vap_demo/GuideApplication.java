@@ -19,13 +19,13 @@ public class GuideApplication extends Application {
 
 
         // Uncomment the line below to try it with a Localhost server instance
-         //getApplicationContext(), "http://10.0.2.2:3000/api");
+         getApplicationContext(), "http://10.0.2.2:3000/api");
 
         // Test with the Heroku account (Currently unavailable)
        //  getApplicationContext(), "http://shielded-hollows-8250.herokuapp.com/api");
 
         // Uncomment the line below to try it with the Test AmazonEC2 account
-         getApplicationContext(), "https://54.165.11.24:3000/api");
+        //  getApplicationContext(), "https://54.165.11.24:3000/api"); //
 
         // This boilerplate is required for Lesson Three.
             adapter.getContract().addItem(

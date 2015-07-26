@@ -35,7 +35,7 @@
         "dataLength": 65000,
         "dataPrecision": null,
         "dataScale": null,
-        "nullable": "NO"
+        "nullable": "YES"
       }
     },
       "deviceID": {
@@ -49,6 +49,22 @@
         "dataType": "int",
         "dataLength": null,
         "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
+    }
+	,
+      "confirm": {
+      "type": "Number",
+      "required": true,
+      "length": null,
+      "precision": 3,
+      "scale": 0,
+      "mysql": {
+        "columnName": "confirm",
+        "dataType": "tinyint",
+        "dataLength": null,
+        "dataPrecision": 3,
         "dataScale": 0,
         "nullable": "NO"
       }

@@ -21,16 +21,16 @@ module.exports = function (Device) {
 	function generateToken(deviceIdentifier){
 var current_date = (new Date()).valueOf().toString();
 var random = Math.random().toString();
-crypto.createHash('sha1').update(current_date + random).digest('hex');		
+return crypto.createHash('sha1').update(deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
 	}
 // A function to register a device and give it a public key to communicate further 
 
-    Device.greet = function (deviceIdentifier, purpose, cb) {
+    Device.greet = function (deviceIdentifier, digitalSignaturePublicKey, metadata, purpose, cb) {
         //console.log(Device);
 		var pubkey = generatePublicKey(deviceIdentifier);
 		var token = generateToken(deviceIdentifier);
-      
-            cb(null, pubkey, token);
+        var error = null;
+            cb(null, pubkey, token, error);
         
         	}; 
 
@@ -38,13 +38,17 @@ crypto.createHash('sha1').update(current_date + random).digest('hex');
 		
 			
 			
-// At the manufacturer, a public key may be burned in the chip. 
+// At the manufacturer, a public key, to be used for encrypted communication, may be burned in the chip and further protected by a token. 
 // To simulate this, the method will receive the device's identifier and return a public key in base64.			
+
+// The digital signature public key that the device sends is a hardware protected key, 
+// while the private key is accessible to the user and device, for signing only and not viewing, 
+// it serves the purpose of proving data came from the device, or identification.
     Device.remoteMethod(
         'greet', 
         {
           accepts: [{arg: 'deviceIdentifier', type: 'string'}, {arg:'digitalSignaturePublicKey', type: 'string'}, {arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
-          returns: [{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}]
+          returns: [{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'error', type: 'object'}]
         }
     );
 

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,14 @@ import com.strongloop.android.remoting.adapters.RestContractItem;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -46,7 +56,9 @@ public class DemoOne extends HtmlFragment {
 	 */
 private static boolean videoUploaded = false;
 	private static boolean metadataUploaded = false;
-
+	static final int REQUEST_VIDEO_CAPTURE = 1;
+	static final int REQUEST_VIDEO_FILE = 888;
+	static final int REQUEST_JSON_FILE = 777;
 
 	public static class Video extends Model {
 
@@ -220,9 +232,20 @@ public static KeyPair createKeyPair() {
 	/**
 	 * Saves the desired Note model to the server with all values pulled from the UI.
 	 */
-	private void sendRequest() {
+	private void sendRequest(int choice) {
 		String userMsg = "Request Sent.";
 	   // If the video is selected
+		switch(choice){
+			case 1:
+				showResult("Testing");
+				break;
+			case 2:
+				showResult(getResources().getString(R.string.error_in_development));
+				break;
+			case 3:
+				showResult(getResources().getString(R.string.error_in_development));
+				break;
+		}
 		if(!videoUploaded) {
 			userMsg = "Select a video first.";
 		}
@@ -233,10 +256,10 @@ public static KeyPair createKeyPair() {
 
 	    showResult(userMsg);
 		// Retrieve secret device ID and secret token
-		getSecretDeviceId();
-		getSecretDeviceToken();
+		//getSecretDeviceId();
+		//getSecretDeviceToken();
 		// Or retrieve hardware identifier if those are missing.
-		gethwID();
+		//gethwID();
 		// Check some value to see if it is registered.
         // deviceModelInstance.greet(REGISTER_VALUE)...
 		// If it isn't, register device.
@@ -292,27 +315,46 @@ public static KeyPair createKeyPair() {
 		// showResult("Pick a Video");
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
 		pickMedia.setType("video/*");
-		startActivityForResult(pickMedia,777);
+		startActivityForResult(pickMedia,REQUEST_JSON_FILE);
 	}
 
 /* userPickMetadata
 * This is the action of the Select JSON Metadata button
 * It allows the user to pick a metadata JSON file using the intent ACTION_GET_CONTENT.
-* On a successful selection, The videoUploaded variable is set to true.
+* On a successful selection, The metadataUploaded variable is set to true.
+*/
+	private void userRecordVideo(	)
+	{//showResult("Pick a Metadata File");
+// This code basically says to Android "Hey, I want a video!"
+		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		// This if is asking if the activity and package is allowed to do it.
+		if (takeVideoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+			}
+		else{
+			showResult(getResources().getString(R.string.error_package_error));
+		}
+		}
+
+	/* userRecordVideo
+* This is the action of the Record Video button
+* It allows the user to record a video and automatically do metadata generation and a VAP request.
 */
 	private void userPickMetadata(	)
 	{//showResult("Pick a Metadata File");
 
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
-		pickMedia.setType("application/octet-stream");
-		startActivityForResult(pickMedia,888);
-		}
+		pickMedia.setType("application/octet-stream|application/json");
+	//	pickMedia.addCategory(Intent.CATEGORY_OPENABLE);
+		startActivityForResult(pickMedia,REQUEST_VIDEO_FILE);
+	}
+
 
 
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == 777) {
+		if (requestCode == REQUEST_JSON_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri selectedVideoLocation = data.getData();
                   showResult(selectedVideoLocation.toString());
@@ -321,16 +363,59 @@ public static KeyPair createKeyPair() {
 			}
 		}
 
-		if (requestCode == 888) {
+		if (requestCode == REQUEST_VIDEO_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri selectedJSONLocation = data.getData();
-				showResult(selectedJSONLocation.toString());
+				// showResult(selectedJSONLocation.toString());
+				String JsonMetadata = readText(selectedJSONLocation);
+				showResult(JsonMetadata);
+				//
 				// Do something with the data...
 				metadataUploaded = true;
 			}
 		}
+
+		if (requestCode == REQUEST_VIDEO_CAPTURE) {
+			if (resultCode == Activity.RESULT_OK) {
+				Uri recordedVideoLocation = data.getData();
+				showResult(recordedVideoLocation.toString());
+
+				//
+				// Do something with the data...
+
+			}
+		}
 	}
 
+
+// Reads text file from Android Uri that can convert to string
+	// Adapted from http://stackoverflow.com/questions/14376807/how-to-read-write-string-from-a-file-in-android
+	private String readText(Uri filepath) {
+		String ret = "";
+
+		try {
+			FileInputStream inputStream = new FileInputStream(new File(filepath.getPath()));
+
+			if (inputStream != null) {
+				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+				String receiveString = "";
+				StringBuilder stringBuilder = new StringBuilder();
+
+				while ((receiveString = bufferedReader.readLine()) != null) {
+					stringBuilder.append(receiveString);
+				}
+
+				inputStream.close();
+				ret = stringBuilder.toString();
+			}
+		} catch (FileNotFoundException e) {
+			Log.e("login activity", "File not found: " + e.toString());
+		} catch (IOException e) {
+			Log.e("login activity", "Can not read file: " + e.toString());
+		}
+		return ret;
+	}
 
 	void showResult(String message) {
 		Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
@@ -349,17 +434,17 @@ public static KeyPair createKeyPair() {
 
 		setHtmlText(R.id.content, R.string.lessonOne_content);
 
-		installSendRequestButtonClickHandler();
+		installRecordVideoButtonClickHandler();
 		installUserPickVideoButtonClickHandler();
 		installUserPickMetadataButtonClickHandler();
         return getRootView();
 	}
 
-	private void installSendRequestButtonClickHandler() {
-		final Button button = (Button) getRootView().findViewById(R.id.viewVideos);
+	private void installRecordVideoButtonClickHandler() {
+		final Button button = (Button) getRootView().findViewById(R.id.userRecordVideo);
         button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				sendRequest();
+				userRecordVideo();
 			}
 		});
 	}

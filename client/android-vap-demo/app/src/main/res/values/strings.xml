@@ -102,4 +102,6 @@
     <string name="simulate_video_upload">2. Simulate By Video Upload (Under Development)</string>
     <string name="simulate_j3m">1. Simulate With Informacam J3M</string>
     <string name="simulate_take_video">3.  Simulate By Recording Video (Under Development)</string>
+    <string name="error_package_error">There was an error with the activity\'s package.</string>
+    <string name="error_in_development">This feature is not fully implemented yet.</string>
 </resources>

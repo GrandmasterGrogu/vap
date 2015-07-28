@@ -15,19 +15,31 @@
             android:layout_height="wrap_content" />
 
         <!-- poor man's spacer -->
-        <Button
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_video_button"
-            android:id="@+id/userPickVideo"
-            android:layout_gravity="center_horizontal" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/simulate_j3m"
+            android:id="@+id/textView3" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/select_metadata_button"
-            android:id="@+id/userPickMetadata"
-            android:layout_gravity="center_horizontal" />
+            android:id="@+id/userPickMetadata" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/simulate_video_upload"
+            android:id="@+id/textView2" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_video_button"
+            android:id="@+id/userPickVideo" />
 
         <TextView
             android:layout_width="match_parent"
@@ -39,7 +51,6 @@
             android:id="@+id/viewVideos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:text="@string/send_request" />
 
     </LinearLayout>

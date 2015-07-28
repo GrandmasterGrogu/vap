@@ -97,6 +97,21 @@
         "dataScale": null,
         "nullable": "NO"
       }
+    },
+      "confirm": {
+      "type": "Number",
+      "required": true,
+      "length": null,
+      "precision": 3,
+      "scale": 0,
+      "mysql": {
+        "columnName": "confirm",
+        "dataType": "tinyint",
+        "dataLength": null,
+        "dataPrecision": 3,
+        "dataScale": 0,
+        "nullable": "NO"
+      }
     }
   },
   "validations": [],

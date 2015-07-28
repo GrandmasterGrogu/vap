@@ -1,10 +1,11 @@
 var crypto = require('crypto') // Cryptographic functions
 var ecdsa = require('ecdsa') // Elliptical Curve Digital Signatures
 module.exports = function (Device) {
+
     var constants = {
 		REGISTER : 0,
         CONFIRM_REGISTER : 1,
-		HARDWARE_RESET : 2
+		HARDWARE_RESET : -1 // TODO: Implement a function to simulate a hardware reset or secure firmware update of the chip
     };
 	
 	// A function to return a Public Key for a non-registered device.
@@ -18,20 +19,64 @@ module.exports = function (Device) {
 		// A function to generate a token for a registered device.
 		// Used code from a stackoverflow to create random hash
 		// http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js
-	function generateToken(deviceIdentifier){
+	function generateToken(deviceIdentifier, oldtoken){
+		if(oldtoken==null)
+			oldtoken = "No old token";
 var current_date = (new Date()).valueOf().toString();
 var random = Math.random().toString();
-return crypto.createHash('sha1').update(deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
+return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
 	}
 // A function to register a device and give it a public key to communicate further 
 
     Device.greet = function (deviceIdentifier, digitalSignaturePublicKey, metadata, purpose, cb) {
         //console.log(Device);
+		if(deviceIdentifier == null)
+			deviceIdentifier = "Null case";
+		if(digitalSignaturePublicKey == null)
+			digitalSignaturePublicKey = "Null case";
+		if(metadata == null)
+			metadata = "Null case";
+		if(purpose == null)
+			purpose = constants.REGISTER;
+		if(purpose===constants.REGISTER){
 		var pubkey = generatePublicKey(deviceIdentifier);
 		var token = generateToken(deviceIdentifier);
         var error = null;
-            cb(null, pubkey, token, error);
-        
+		  Device.app.models.Device.create({uid: deviceIdentifier, publickey:digitalSignaturePublicKey, token:token, oldtoken:null, metadata: metadata, confirm: 0},
+	   function(err, model){
+		   if(err)
+			   cb(null, null, null, null, error);
+            cb(null,model.deviceID, pubkey, token, error);
+	   });
+	   }
+	   else if(purpose>constants.REGISTER)
+	   {
+		   // Instead of making a new argument, re-use old ones to pass data.
+		   // This is more of a convenience for coding than design.
+		   var token = digitalSignaturePublicKey;
+		  Device.app.models.Device.findOne({where:{deviceID: purpose, confirm: constants.REGISTER}}, 
+  function(err, model){
+		 if(error){
+			   error = err;
+			   cb(null,null,null,null,error);
+			   }
+		   else if(model == null)
+			   cb(null,null,null,null,null);
+	    var oldtoken = model.oldtoken;
+		var newtoken = generateToken(deviceIdentifier, oldtoken);  
+		model.oldtoken = model.token;
+		model.token = newtoken;
+		model.confirm = constants.CONFIRM_REGISTER;
+		   model.save(null, function(err, instance){
+			   
+		cb(null,purpose,token,newtoken,error);    
+		   });
+		   		   	    
+	   });
+	   }
+   else{
+	   cb(null,null,null,null,null);
+   }
         	}; 
 
 			
@@ -47,8 +92,8 @@ return crypto.createHash('sha1').update(deviceIdentifier.toString() + current_da
     Device.remoteMethod(
         'greet', 
         {
-          accepts: [{arg: 'deviceIdentifier', type: 'string'}, {arg:'digitalSignaturePublicKey', type: 'string'}, {arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
-          returns: [{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'error', type: 'object'}]
+          accepts: [{arg: 'deviceIdentifier', type: 'string'}, {arg:'digitalSignaturePublicKey', type: 'string'}, {arg: 'metadata', type: 'string'}, {arg: 'purpose', type: 'number'}],
+          returns: [{arg: 'deviceID', type: 'number'},{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'error', type: 'object'}]
         }
     );
 

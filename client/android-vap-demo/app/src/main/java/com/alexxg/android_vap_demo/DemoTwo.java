@@ -34,6 +34,9 @@ public class DemoTwo extends HtmlFragment {
     private static final String OLD_TOKEN = "OLD_TOKEN";
     private static final String MDATA = "METADATA";
     private static final String PK = "PUBLIC_KEY";
+    private boolean videoUpload = false;
+    private boolean deviceUpload = false;
+
 
     public static class Video extends Model {
 
@@ -178,13 +181,15 @@ public class DemoTwo extends HtmlFragment {
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Video>() {
             @Override
             public void onSuccess(List<Video> models) {
+                videoUpload = true;
+                deviceUpload = false;
                 list.setAdapter(new VideoListAdapter(getActivity(), models));
             }
 
             @Override
             public void onError(Throwable t) {
                // Log.e(getTag(), "Cannot save Note model.", t);
-                showResult("Failed.");
+                showResult("Failed to load.");
                 showResult(t.toString());
             }
         });
@@ -205,13 +210,15 @@ public class DemoTwo extends HtmlFragment {
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Device>() {
             @Override
             public void onSuccess(List<Device> models) {
+                videoUpload = false;
+                deviceUpload = true;
                 list.setAdapter(new DeviceListAdapter(getActivity(), models));
             }
 
             @Override
             public void onError(Throwable t) {
                 // Log.e(getTag(), "Cannot save Note model.", t);
-                showResult("Failed.");
+                showResult("Failed to load.");
                 showResult(t.toString());
             }
         });

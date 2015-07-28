@@ -5,10 +5,17 @@
     style="@style/ContentFrameStyle"
     tools:context=".SlidePresenterActivity" >
 
-    <TextView
-        android:id="@+id/introduction_content"
-        android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|fill_horizontal" />
+        android:fadeScrollbars="false"
+        android:id="@+id/scrollView" >
+
+        <TextView
+            android:id="@+id/introduction_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|fill_horizontal" />
+    </ScrollView>
 
 </FrameLayout>

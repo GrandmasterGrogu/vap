@@ -19,10 +19,10 @@ var oldtoken = token;
 	   function(err, model){
 		   if(error){
 			   error = err;
-			   cb(null,null,null,error);
+			   cb(null,null,null,null,null,null,error);
 			   }
 		   else if(model == null)
-			   cb(null,null,null,null);
+			   cb(null,null,null,null,null,null,null);
 		   else{
 			     	// TODO: Implement check the digital signature function checkDigSig(){}
 					
@@ -32,25 +32,25 @@ if(purpose === 0)	 {
 	   function(err, models){
 		 if(error){
 			   error = err;
-			   cb(null,null,null,error);
+			   cb(null,null,null,null,null,null,error);
 			   }
 		   else if(models == null)
-			   cb(null,null,null,null);
+			   cb(null,null,null,null,null,null,null);
 		   token = generateNewToken(deviceID, oldtoken);
-		cb(token,oldtoken, purpose,error);       		   	    
+		cb(null,null,null,token,oldtoken, purpose,error);       		   	    
 	   });
 } else{
 	// TODO: update video if videoID is valid with device and confirm, otherwise return nothing or an error message.
-  Video.app.models.Video.upsert({videoID: purpose, confirm:1, deviceID: deviceID, metadata: metadata.toString()},
-	   function(err, models){
+Video.app.models.Video.findOne({where:{videoID: purpose, confirm: 0}}, 
+  function(err, model){
 		 if(error){
 			   error = err;
-			   cb(null,null,null,error);
+			   cb(null,null,null,null,null,null,error);
 			   }
-		   else if(models == null)
+		   else if(model == null)
 			   cb(null,null,null,null);
 		   token = generateNewToken(deviceID, oldtoken);
-		cb(token,oldtoken, purpose,error);       		   	    
+		cb(null,null,null,token,oldtoken, purpose,error);       		   	    
 	   });
 	}
       
@@ -64,8 +64,8 @@ if(purpose === 0)	 {
     Video.remoteMethod(
         'greet', 
         {
-          accepts: [{arg: 'deviceID', type: 'string'}, {arg: 'token', type: 'string'}, arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
-          returns: [{arg: 'token', type: 'string'}, {arg: 'oldtoken', type: 'string'}, {arg: 'purpose', type: 'number'}, {arg: 'error', type: 'object'}]
+          accepts: [{arg: 'deviceID', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
+          returns: [{arg: 'filehash', type: 'string'},{arg: 'metadatahash', type: 'string'},{arg: 'token', type: 'string'}, {arg: 'oldtoken', type: 'string'}, {arg: 'purpose', type: 'number'}, {arg: 'error', type: 'object'}]
         }
     );
 

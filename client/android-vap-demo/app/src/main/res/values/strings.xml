@@ -61,9 +61,11 @@
         <b>Metadata: </b>
     ]]></string>
     <string name="lessonOne_content"><![CDATA[
-        <h3>Demo One: Select test data to upload.</h3>
-        <p>After downloading the test server, this form can upload
-        a metadata JSON file exported by <a href="https://guardianproject.info/informa/">Informacam</a> and a video to the test server.</p>
+        <h3>Demo One: VAP request.</h3>
+        <p> A VAP request is a request to authenticate a video. The simulation is broken up into three level of granularity,
+        assuming a video is recorded and their is a metadata file, assuming a video is recorded and metadata needs to be retrieved still,
+        and the full real world situation, assuming no video is recorded yet. Ideally, VAP requests are built-in to the video recording process.
+        For the first, a metadata J3M file must be exported by <a href="https://guardianproject.info/informa/">Informacam</a> and a video to the test server.</p>
         <p>In a complete prototype of the framework, a video\'s
          metadata will be generated automatically, request to be recorded and verified by device manufacturer\'s datacenter.</p>
     ]]></string>
@@ -84,8 +86,9 @@
         Locations will be displayed in a list. To get an interactive map view,
         use a real device supporting OpenGL ES 2.0. Any model made after 2010 should be fine.</string>
     <string name="title_front_page">Video Authentication Protocol</string>
+    <string name="record_video_button">Record a Video</string>
     <string name="select_video_button">Select a Video</string>
-    <string name="select_metadata_button">Select JSON Metadata</string>
+    <string name="select_metadata_button">Select J3M File</string>
     <string name="device_button">See the Devices</string>
     <string name="video_button">See the Videos</string>
 
@@ -96,4 +99,7 @@
     <string name="title_activity_item_details">ItemDetails</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="simulate_video_upload">2. Simulate By Video Upload (Under Development)</string>
+    <string name="simulate_j3m">1. Simulate With Informacam J3M</string>
+    <string name="simulate_take_video">3.  Simulate By Recording Video (Under Development)</string>
 </resources>

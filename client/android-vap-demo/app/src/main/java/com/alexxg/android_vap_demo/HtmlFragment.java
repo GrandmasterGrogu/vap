@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ public class HtmlFragment extends Fragment {
     It is created at registration. On the device, it would be stored on a hardware chip
     that can only receive encrypted communication from the cloud.
      */
-	private String secretDeviceId;
+	private int secretDeviceId;
 	/* Secret Device Token
 This is the token value the is used to communication to the manufacturer's cloud.
 The token value is created by the last communication and protects against replay attacks.
@@ -54,32 +53,35 @@ However, currently, there is not a way to use the self-signed certificates avail
 		super();
 	}
 
-	protected String getSecretDeviceId(){ return secretDeviceId;}
+	protected Integer getSecretDeviceId(){ return secretDeviceId;}
 	protected String getSecretDeviceToken(){ return secretDeviceToken;}
 	protected String getSemiSecretDigitalSignaturePublicKey(){ return semiSecretDigitalSignaturePublicKey;}
 	protected String getSecretEncryptionPublicKey(){ return secretEncryptionPublicKey;}
 	protected String gethwID(){ return hwID;}
 
-	protected void setSecretDeviceId(String newValue){
+	protected void setSecretDeviceId(Integer newValue){
 		secretDeviceId = newValue;
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-		settings.edit().putString(SECRET_DEVICE_ID, newValue);
+		settings.edit().putInt(SECRET_DEVICE_ID, newValue).apply();
+
 	}
 	protected void setSecretDeviceToken(String newValue){
 		secretDeviceToken = newValue;
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-		settings.edit().putString(SECRET_TOKEN, newValue);
+		settings.edit().putString(SECRET_TOKEN, newValue).apply();
+
 	}
 
 	protected void setSemiSecretDigitalSignaturePublicKey(String newValue){
 		semiSecretDigitalSignaturePublicKey = newValue;
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-		settings.edit().putString(SEMI_SECRET_DIGITAL_SIGNATURE_PUBLIC_KEY, newValue);
+		settings.edit().putString(SEMI_SECRET_DIGITAL_SIGNATURE_PUBLIC_KEY, newValue).apply();
 	}
+
 	protected void setSecretEncryptionPublicKey(String newValue){
 		secretEncryptionPublicKey = newValue;
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-		settings.edit().putString(SECRET_ENCRYPTION_PUBLIC_KEY, newValue);
+		settings.edit().putString(SECRET_ENCRYPTION_PUBLIC_KEY, newValue).apply();
 	}
 
 	private void setDeviceId(String newValue){hwID = newValue;}
@@ -103,7 +105,7 @@ However, currently, there is not a way to use the self-signed certificates avail
 		context = getActivity().getApplicationContext();
 		setDeviceId(Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID));
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);
-		String id = settings.getString(SECRET_DEVICE_ID, UNKNOWN);
+		int id = settings.getInt(SECRET_DEVICE_ID, 0);
 		String token = settings.getString(SECRET_TOKEN, UNKNOWN);
 		String ds_public_key = settings.getString(SEMI_SECRET_DIGITAL_SIGNATURE_PUBLIC_KEY, UNKNOWN);
 		String e_public_key = settings.getString(SECRET_ENCRYPTION_PUBLIC_KEY, UNKNOWN);

@@ -104,4 +104,5 @@
     <string name="simulate_take_video">3.  Simulate By Recording Video (Under Development)</string>
     <string name="error_package_error">There was an error with the activity\'s package.</string>
     <string name="error_in_development">This feature is not fully implemented yet.</string>
+    <string name="registered_device">Successfully registered device with manufacturer database.</string>
 </resources>

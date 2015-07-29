@@ -22,7 +22,7 @@ public class RegistrationFragment extends HtmlFragment {
 
         setHtmlText(R.id.vap_secret_id, R.string.vap_secret_id);
         text = (TextView)getRootView().findViewById(R.id.vap_secret_id_value);
-        text.setText(getSecretDeviceId());
+        text.setText(getSecretDeviceId().toString());
 
         setHtmlText(R.id.vap_token, R.string.vap_token);
         text = (TextView)getRootView().findViewById(R.id.vap_token_value);

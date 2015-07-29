@@ -102,13 +102,13 @@
       "type": "Number",
       "required": true,
       "length": null,
-      "precision": 3,
+      "precision": 4,
       "scale": 0,
       "mysql": {
         "columnName": "confirm",
         "dataType": "tinyint",
         "dataLength": null,
-        "dataPrecision": 3,
+        "dataPrecision": 4,
         "dataScale": 0,
         "nullable": "NO"
       }

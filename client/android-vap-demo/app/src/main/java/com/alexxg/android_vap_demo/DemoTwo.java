@@ -200,7 +200,7 @@ public class DemoTwo extends HtmlFragment {
         GuideApplication app = (GuideApplication)getActivity().getApplication();
         RestAdapter adapter = app.getLoopBackAdapter();
 
-        // 2. Instantiate our VideoRepository.
+        // 2. Instantiate our DeviceRepository.
         DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
 
         // 3. Rather than instantiate a model directly like we did in Lesson One, we'll query

@@ -11,16 +11,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
+import com.strongloop.android.loopback.RestAdapter;
+import com.strongloop.android.loopback.callbacks.JsonObjectParser;
+import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
+import com.strongloop.android.remoting.VirtualObject;
 import com.strongloop.android.remoting.adapters.Adapter;
 import com.strongloop.android.remoting.adapters.RestContract;
 import com.strongloop.android.remoting.adapters.RestContractItem;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -56,9 +62,12 @@ public class DemoOne extends HtmlFragment {
 	 */
 private static boolean videoUploaded = false;
 	private static boolean metadataUploaded = false;
-	static final int REQUEST_VIDEO_CAPTURE = 1;
-	static final int REQUEST_VIDEO_FILE = 888;
-	static final int REQUEST_JSON_FILE = 777;
+	private static String SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKkbSUT9/Q2uBfGRau6/XJyZhcF5abo7\n" +
+			"b37I5hr3EmwGykdzyk8GSyJK3TOrjyl0sdJsGbFmgQaRyV+DLE7750ECAwEAAQ==";
+	static final int REQUEST_VIDEO_CAPTURE = 3;
+	static final int REQUEST_VIDEO_FILE = 2;
+	static final int REQUEST_JSON_FILE = 1;
+	static final int PURPOSE_REGISTER = 0;
 
 	public static class Video extends Model {
 
@@ -177,20 +186,22 @@ private static boolean videoUploaded = false;
 			return contract;
 		}
 
-		public void greet(String deviceIdentifier, String purpose, final VoidCallback callback) {
+		public void greet(String deviceIdentifier, String digitalSignaturePublicKey, String metadata, int purpose, final Adapter.JsonObjectCallback callback) {
 			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("purpose", purpose);
-			params.put("deviceIdentifier", deviceIdentifier);
-			invokeStaticMethod("greet", params, new Adapter.Callback() {
 
+			params.put("deviceIdentifier", deviceIdentifier);
+			params.put("digitalSignaturePublicKey", deviceIdentifier);
+			params.put("metadata", metadata);
+			params.put("purpose", purpose);
+			invokeStaticMethod("greet", params, new Adapter.JsonObjectCallback() {
 				@Override
 				public void onError(Throwable t) {
 					callback.onError(t);
 				}
 
 				@Override
-				public void onSuccess(String response) {
-					callback.onSuccess();
+				public void onSuccess(JSONObject response) {
+				callback.onSuccess(response);
 				}
 			});
 		}
@@ -232,30 +243,67 @@ public static KeyPair createKeyPair() {
 	/**
 	 * Saves the desired Note model to the server with all values pulled from the UI.
 	 */
-	private void sendRequest(int choice) {
-		String userMsg = "Request Sent.";
-	   // If the video is selected
-		switch(choice){
-			case 1:
-				showResult("Testing");
-				break;
-			case 2:
-				showResult(getResources().getString(R.string.error_in_development));
-				break;
-			case 3:
-				showResult(getResources().getString(R.string.error_in_development));
-				break;
-		}
-		if(!videoUploaded) {
-			userMsg = "Select a video first.";
-		}
-		// and the metadata is selected
-		else if(!metadataUploaded) {
-			userMsg = "Select a metadata file first.";
-		}
+	private void sendRequest(String jsonMetadata) {
 
-	    showResult(userMsg);
-		// Retrieve secret device ID and secret token
+
+		GuideApplication app = (GuideApplication)getActivity().getApplication();
+		RestAdapter adapter = app.getLoopBackAdapter();
+
+showResult("This Far");
+		// 2. Instantiate our DeviceRepository.
+		DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
+
+		// 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
+		//    the server for all Cars, filling out our ListView with the results. In this case,
+		//    the Repository is really the workhorse; the Model is just a simple container.
+		setSemiSecretDigitalSignaturePublicKey(SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY);
+		repository.greet(gethwID(),SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY,jsonMetadata, PURPOSE_REGISTER,
+				new Adapter.JsonObjectCallback() {
+					@Override
+					public void onError(Throwable t) {
+					showResult(t.toString());
+					}
+
+					@Override
+					public void onSuccess(JSONObject response) {
+					showResult(getResources().getString(R.string.registered_device));
+if(response.has("deviceID") && response.has("publickey") && response.has("token")){
+
+	TextView text = (TextView)getRootView().findViewById(R.id.vap_secret_id_value);
+
+	try {
+		showResult(response.getString("publickey"));
+		setSecretEncryptionPublicKey(response.getString("publickey"));
+
+		text.setText(gethwID());
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
+	try {
+		int newSecretDeviceID = response.getInt("deviceID");
+		showResult(Integer.toString(newSecretDeviceID));
+		setSecretDeviceId(newSecretDeviceID);
+
+		text.setText(getSecretDeviceId().toString());
+
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
+	try {
+		String theNewToken = response.getString("token");
+		showResult(theNewToken);
+		setSecretDeviceToken(theNewToken);
+		text = (TextView)getRootView().findViewById(R.id.vap_token_value);
+		text.setText(getSecretDeviceToken());
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
+
+}
+					}
+				});
+
+	// Retrieve secret device ID and secret token
 		//getSecretDeviceId();
 		//getSecretDeviceToken();
 		// Or retrieve hardware identifier if those are missing.
@@ -315,7 +363,7 @@ public static KeyPair createKeyPair() {
 		// showResult("Pick a Video");
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
 		pickMedia.setType("video/*");
-		startActivityForResult(pickMedia,REQUEST_JSON_FILE);
+		startActivityForResult(pickMedia, REQUEST_VIDEO_CAPTURE);
 	}
 
 /* userPickMetadata
@@ -329,7 +377,7 @@ public static KeyPair createKeyPair() {
 		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 		// This if is asking if the activity and package is allowed to do it.
 		if (takeVideoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+			startActivityForResult(takeVideoIntent,REQUEST_VIDEO_FILE );
 			}
 		else{
 			showResult(getResources().getString(R.string.error_package_error));
@@ -344,34 +392,38 @@ public static KeyPair createKeyPair() {
 	{//showResult("Pick a Metadata File");
 
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
-		pickMedia.setType("application/octet-stream|application/json");
+		pickMedia.setType("application/octet-stream|application/json|*/*");
 	//	pickMedia.addCategory(Intent.CATEGORY_OPENABLE);
-		startActivityForResult(pickMedia,REQUEST_VIDEO_FILE);
+		startActivityForResult(pickMedia,REQUEST_JSON_FILE);
 	}
 
 
 
-
+/* onActivityResult
+* This says what to do when another Activity returns a result
+*/
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_JSON_FILE) {
+		if (requestCode == REQUEST_VIDEO_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri selectedVideoLocation = data.getData();
                   showResult(selectedVideoLocation.toString());
+				showResult(getResources().getString(R.string.error_in_development));
 				// Do something with the data...
 				videoUploaded = true;
 			}
 		}
 
-		if (requestCode == REQUEST_VIDEO_FILE) {
+		if (requestCode == REQUEST_JSON_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri selectedJSONLocation = data.getData();
 				// showResult(selectedJSONLocation.toString());
 				String JsonMetadata = readText(selectedJSONLocation);
-				showResult(JsonMetadata);
+				//showResult(JsonMetadata);
 				//
 				// Do something with the data...
 				metadataUploaded = true;
+				sendRequest(JsonMetadata);
 			}
 		}
 
@@ -379,7 +431,7 @@ public static KeyPair createKeyPair() {
 			if (resultCode == Activity.RESULT_OK) {
 				Uri recordedVideoLocation = data.getData();
 				showResult(recordedVideoLocation.toString());
-
+                showResult(getResources().getString(R.string.error_in_development));
 				//
 				// Do something with the data...
 

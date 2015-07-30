@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class RegistrationFragment extends HtmlFragment {
@@ -27,6 +29,40 @@ public class RegistrationFragment extends HtmlFragment {
         setHtmlText(R.id.vap_token, R.string.vap_token);
         text = (TextView)getRootView().findViewById(R.id.vap_token_value);
         text.setText(getSecretDeviceToken());
+        installRefreshButtonClickHandler();
+        installHardwareResetButtonClickHandler();
+
         return getRootView();
 	}
-}
+    private void installRefreshButtonClickHandler(){
+        final ImageButton button = (ImageButton) getRootView().findViewById(R.id.refreshButton);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                TextView text = (TextView) getRootView().findViewById(R.id.vap_secret_id_value);
+                text.setText(getSecretDeviceId().toString());
+                text = (TextView) getRootView().findViewById(R.id.vap_token_value);
+                text.setText(getSecretDeviceToken());
+                showResult(getResources().getString(R.string.refreshed));
+            }
+        });
+            }
+
+            private void installHardwareResetButtonClickHandler() {
+                final Button button = (Button) getRootView().findViewById(R.id.hwResetButton);
+                button.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        setSecretDeviceToken(UNKNOWN);
+                        setSecretDeviceId(0);
+                        setSemiSecretDigitalSignaturePublicKey(UNKNOWN);
+                        setSecretEncryptionPublicKey(UNKNOWN);
+                        showResult(getResources().getString(R.string.wipeVAP));
+                        TextView text = (TextView) getRootView().findViewById(R.id.vap_secret_id_value);
+                        text.setText(getSecretDeviceId().toString());
+
+                        text = (TextView) getRootView().findViewById(R.id.vap_token_value);
+                        text.setText(getSecretDeviceToken());
+                    }
+                });
+            }
+        }

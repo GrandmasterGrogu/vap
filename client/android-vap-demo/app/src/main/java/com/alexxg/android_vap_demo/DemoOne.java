@@ -14,14 +14,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.loopback.callbacks.JsonObjectParser;
-import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
-import com.strongloop.android.remoting.VirtualObject;
+
 import com.strongloop.android.remoting.adapters.Adapter;
 import com.strongloop.android.remoting.adapters.RestContract;
 import com.strongloop.android.remoting.adapters.RestContractItem;
@@ -30,12 +27,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -135,7 +130,7 @@ private static boolean videoUploaded = false;
 	}
 
 	/**
-	 * Our custom ModelRepository subclass. See Lesson One for more information.
+	 * Our custom VideoRepository subclass..
 	 */
 	public static class VideoRepository extends ModelRepository<Video> {
 		public VideoRepository() {
@@ -170,7 +165,7 @@ private static boolean videoUploaded = false;
 
 	}
 	/**
-	 * Our custom ModelRepository subclass. See Lesson One for more information.
+	 * Our custom DeviceRepository subclass.
 	 */
 	public static class DeviceRepository extends ModelRepository<Device> {
 		public DeviceRepository() {
@@ -241,76 +236,99 @@ public static KeyPair createKeyPair() {
 	}
 
 	/**
-	 * Saves the desired Note model to the server with all values pulled from the UI.
+	 * Sends a device registration request before the VAP request, if necessary.
 	 */
-	private void sendRequest(String jsonMetadata) {
+	private void sendRequest(final String jsonMetadata) {
 
 
 		GuideApplication app = (GuideApplication)getActivity().getApplication();
 		RestAdapter adapter = app.getLoopBackAdapter();
-
-showResult("This Far");
-		// 2. Instantiate our DeviceRepository.
-		DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
-
-		// 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
-		//    the server for all Cars, filling out our ListView with the results. In this case,
-		//    the Repository is really the workhorse; the Model is just a simple container.
-		setSemiSecretDigitalSignaturePublicKey(SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY);
-		repository.greet(gethwID(),SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY,jsonMetadata, PURPOSE_REGISTER,
-				new Adapter.JsonObjectCallback() {
-					@Override
-					public void onError(Throwable t) {
-					showResult(t.toString());
-					}
-
-					@Override
-					public void onSuccess(JSONObject response) {
-					showResult(getResources().getString(R.string.registered_device));
-if(response.has("deviceID") && response.has("publickey") && response.has("token")){
-
-	TextView text = (TextView)getRootView().findViewById(R.id.vap_secret_id_value);
-
-	try {
-		showResult(response.getString("publickey"));
-		setSecretEncryptionPublicKey(response.getString("publickey"));
-
-		text.setText(gethwID());
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
-	try {
-		int newSecretDeviceID = response.getInt("deviceID");
-		showResult(Integer.toString(newSecretDeviceID));
-		setSecretDeviceId(newSecretDeviceID);
-
-		text.setText(getSecretDeviceId().toString());
-
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
-	try {
-		String theNewToken = response.getString("token");
-		showResult(theNewToken);
-		setSecretDeviceToken(theNewToken);
-		text = (TextView)getRootView().findViewById(R.id.vap_token_value);
-		text.setText(getSecretDeviceToken());
-	} catch (JSONException e) {
-		e.printStackTrace();
-	}
-
-}
-					}
-				});
-
-	// Retrieve secret device ID and secret token
-		//getSecretDeviceId();
-		//getSecretDeviceToken();
+// Retrieve secret device ID and secret token
 		// Or retrieve hardware identifier if those are missing.
-		//gethwID();
 		// Check some value to see if it is registered.
-        // deviceModelInstance.greet(REGISTER_VALUE)...
+		// deviceModelInstance.greet(REGISTER_VALUE)...
 		// If it isn't, register device.
+if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
+	// 2. Instantiate our DeviceRepository.
+	final DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
+
+	setSemiSecretDigitalSignaturePublicKey(SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY);
+	repository.greet(gethwID(), SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY, buildDeviceMetadata().toString(), PURPOSE_REGISTER,
+			new Adapter.JsonObjectCallback() {
+				@Override
+				public void onError(Throwable t) {
+					showResult(t.toString());
+				}
+
+				@Override
+				public void onSuccess(JSONObject response) {
+					showResult(getResources().getString(R.string.registered_device));
+					if (response.has("deviceID") && response.has("publickey") && response.has("token")) {
+
+
+
+						try {
+							showResult(response.getString("publickey"));
+							setSecretEncryptionPublicKey(response.getString("publickey"));
+
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						try {
+							int newSecretDeviceID = response.getInt("deviceID");
+							showResult(Integer.toString(newSecretDeviceID));
+							setSecretDeviceId(newSecretDeviceID);
+
+
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						try {
+							String theNewToken = response.getString("token");
+							showResult(theNewToken);
+							setSecretDeviceToken(theNewToken);
+									} catch (JSONException e) {
+							e.printStackTrace();
+						}
+
+						// This next part is the Device Registration confirmation step.
+						try {
+							repository.greet(gethwID(), response.getString("token"), buildDeviceMetadata().toString(), response.getInt("deviceID"),
+                                    new Adapter.JsonObjectCallback() {
+                                        @Override
+                                        public void onError(Throwable t) {
+                                        showResult(t.toString());
+                                        }
+
+                                        @Override
+                                        public void onSuccess(JSONObject response) {
+											try {
+												String theNewToken = response.getString("token");
+												showResult(theNewToken);
+												setSecretDeviceToken(theNewToken);
+												showResult(getResources().getString(R.string.device_registration_confirmed));
+												sendVideoAuthenticationProtocolRequest(jsonMetadata);
+											} catch (JSONException e) {
+												e.printStackTrace();
+											}
+                                        }
+                                    });
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					} // end if the response gave back
+					else {
+						showResult(getResources().getString(R.string.error_connectivity));
+					}
+				} // end OnSuccess for Device
+
+			});
+} // End if Secret Device ID and Token is unknown.
+		else{
+	sendVideoAuthenticationProtocolRequest(jsonMetadata);
+}
+
+
 	//	deviceModelInstance.greet(CONFIRM_REGISTER_VALUE)...
 		// Then follow same group of functions, if had been already registered.
 		//
@@ -319,41 +337,64 @@ if(response.has("deviceID") && response.has("publickey") && response.has("token"
 
 	//	videoModelInstance.greet(CONFIRM_RECORD_VALUE)...
 		// Check token against secret value and replace with new one. Send response back if successful or not.
-	       /*// 1. Grab the shared RestAdapter instance.
-		GuideApplication app = (GuideApplication)getActivity().getApplication();
-		RestAdapter adapter = app.getLoopBackAdapter();
-
-	    // 2. Instantiate our NoteRepository. For the intrepid, notice that we could create this
-	    //    once (say, in onCreateView) and use the same instance for every request.
-		//    Additionally, the shared adapter is associated with the prototype, so we'd only
-		//    have to do step 1 in onCreateView also. This more verbose version is presented
-		//    as an example; making it more efficient is left as a rewarding exercise for the reader.
-		NoteRepository repository = adapter.createRepository(NoteRepository.class);
-
-	    // 3. From that prototype, create a new NoteModel. We pass in an empty dictionary to defer
-		//    setting any values.
-		NoteModel model = repository.createObject(ImmutableMap.of("user", "Pencil"));
-
-	    // 4. Pull model values from the UI.
-		model.setUser(getUser());
-		model.setComment(getComment());
-		model.setReviewed(isReviewed());
-
-		// 5. Save!
-		model.save(new Model.Callback() {
-
-			@Override
-			public void onSuccess() {
-				showResult("Saved!");
-			}
-
-			@Override
-			public void onError(Throwable t) {
-				Log.e(getTag(), "Cannot save Note model.", t);
-				showResult("Failed.");
-			}
-		});*/
+/*  sendVideoAuthenticationProtocolRequest
+* This request to record a video as authenticated in the manufacturer's database.
+*  A confirmation response and request completes the transaction.
+ */
 	}
+
+	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata) {
+	showResult("Made it this far!");
+	}
+
+	/* buildDeviceMetadata
+    * Creates a set of metadata by reading it from the Device.
+    * @return A JSONObject
+     */
+	private JSONObject buildDeviceMetadata(){
+		JSONObject deviceMetadata = new JSONObject();
+		try{
+		String _OSVERSION = System.getProperty("os.version");
+		String _RELEASE = android.os.Build.VERSION.RELEASE;
+		String _DEVICE = android.os.Build.DEVICE;
+		String _MODEL = android.os.Build.MODEL;
+		String _PRODUCT = android.os.Build.PRODUCT;
+		String _BRAND = android.os.Build.BRAND;
+		String _DISPLAY = android.os.Build.DISPLAY;
+		String _CPU_ABI = android.os.Build.CPU_ABI;
+		String _CPU_ABI2 = android.os.Build.CPU_ABI2;
+		String _UNKNOWN = android.os.Build.UNKNOWN;
+		String _HARDWARE = android.os.Build.HARDWARE;
+		String _ID = android.os.Build.ID;
+		String _MANUFACTURER = android.os.Build.MANUFACTURER;
+		String _SERIAL = android.os.Build.SERIAL;
+		String _USER = android.os.Build.USER;
+		String _HOST = android.os.Build.HOST;
+
+
+			deviceMetadata.put("OSVERSION",_OSVERSION);
+			deviceMetadata.put("RELEASE",_RELEASE);
+			deviceMetadata.put("DEVICE",_DEVICE);
+			deviceMetadata.put("MODEL",_MODEL);
+			deviceMetadata.put("PRODUCT",_PRODUCT);
+			deviceMetadata.put("BRAND",_BRAND);
+			deviceMetadata.put("DISPLAY",_DISPLAY);
+			deviceMetadata.put("CPU_ABI",_CPU_ABI);
+			deviceMetadata.put("CPU_ABI2",_CPU_ABI2);
+			deviceMetadata.put("UNKNOWN",_UNKNOWN);
+			deviceMetadata.put("HARDWARE",_HARDWARE);
+			deviceMetadata.put("ID",_ID);
+			deviceMetadata.put("MANUFACTURER",_MANUFACTURER);
+			deviceMetadata.put("SERIAL",_SERIAL);
+			deviceMetadata.put("USER",_USER);
+			deviceMetadata.put("HOST",_HOST);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return deviceMetadata;
+	}
+
 /* userPickVideo
 * This is the action of the Select a Video button
 * It allows the user to pick a video using the intent ACTION_GET_CONTENT.
@@ -457,21 +498,21 @@ if(response.has("deviceID") && response.has("publickey") && response.has("token"
 				while ((receiveString = bufferedReader.readLine()) != null) {
 					stringBuilder.append(receiveString);
 				}
-
+                  bufferedReader.close();
+				inputStreamReader.close();
 				inputStream.close();
+
 				ret = stringBuilder.toString();
+
 			}
 		} catch (FileNotFoundException e) {
-			Log.e("login activity", "File not found: " + e.toString());
+			Log.e("reading text", "File not found: " + e.toString());
 		} catch (IOException e) {
-			Log.e("login activity", "Can not read file: " + e.toString());
+			Log.e("reading text", "Can not read file: " + e.toString());
 		}
 		return ret;
 	}
 
-	void showResult(String message) {
-		Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-	}
 
 	//
 	// GUI glue

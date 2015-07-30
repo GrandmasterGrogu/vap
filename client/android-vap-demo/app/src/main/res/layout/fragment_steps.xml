@@ -12,12 +12,10 @@
         android:id="@+id/scrollView" >
 
         <TextView
-            android:id="@+id/introduction_content"
+            android:id="@+id/steps_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|fill_horizontal"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp" />
+            android:layout_gravity="top|fill_horizontal" />
     </ScrollView>
 
 </FrameLayout>

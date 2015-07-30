@@ -18,19 +18,42 @@
         <h3>Welcome to the Video Authentication Protocol Demo!</h3>
         <p>The purpose of the demo is to demonstrate a new model for
         non-repudiation, integrity and authentication of videos.
-        This means someone can prove that a video was recorded by their device.</p>
-        <p>This occurs in three steps: </p>
-        <ol>
-        <li>The camera device registers itself with the manufacturer\'s database.</li>
-        <li>For every video, the device sends a \"record\" request with metadata to the manufacturer.</li>
-        <li>The manufacturer sends a \"confirm\" request to a hardware-protected key store and metadata storage on the camera that sends a reply back.</li>
-        </ol>
+        This means someone can automatically prove that a video was recorded by their device.</p>
+         <p>This occurs in three stages: </p>
+        <p>1. The camera device registers itself with the manufacturer\'s database.</p>
+        <p>2. For every video, the device sends an \"authentication\" request with metadata to the manufacturer.</p>
+        <p>3. The manufacturer sends a \"confirm\" request to a hardware-protected key store and metadata storage on the camera that sends a reply back.</p>
 
         <p>In other words, the protocol works by interacting components provided by the device manufacturer.</p>
-    <p>    <tt>Video Authentication Server</tt> - This is a remote database owned by the manufacturer that stores video and device metadata.</p>
-    <p>    <tt>Video Authentication Client</tt> - The client device with the camera.  This app simulates the function of a hardware chip that communicates to the server.</p>
+    <p>    <b><tt>Video Authentication Server</tt></b> - This is a remote database owned by the manufacturer that stores video and device metadata.</p>
+    <p>    <b><tt>Video Authentication Client</tt></b> - The client device with the camera.  This app simulates the function of a hardware chip that communicates to the server.</p>
         <p>Download the Java source code to this app or  NodeJS / MySQL server code at GitHub.</p>
         <p><a href="https://github.com/alexxgathp/vap">Video Authentication Protocol Project</a></p>
+    ]]></string>
+     <string name="steps_content"><![CDATA[
+        <h3>Stage 1: Device Registration</h3>
+        <p>1. Internet-connected camera device is built by the manufacturer.</p>
+        <p>2. Device is loaded with a digital signature, not viewable, but useable by the device user.</p>
+        <p>3. Device is primed with an encryption public key, token and secret device ID, unknown and unavailable to the user. </p>
+        <p>4. The manufacturer stores the above data with device-specific metadata in order to verify and communicate with the device later. </p>
+
+<h3>Stage 2: Video Authentication Request</h3>
+        <p>1. User records a video.</p>
+        <p>2. Hardware chip receives the video.</p>
+        <p>3. Hardware chip analyzes it and stores a hash of the video metadata and of the file.</p>
+        <p>4. Hardware chip encrypts data payload with metadata and device identifiers using the encryption public key. </p>
+        <p>5. Hardware chip digitally signs data as well. </p>
+        <p>6. The encrypted data sends to the manufacturer. </p>
+
+        <h3>Stage 3: Video Confirmation</h3>
+        <p>1. The manufacturer decrypts the request and verifies the secret device ID and token.</p>
+        <p>2. It records the video metadata, generates a new token, and sends an encrypted confirmation request to the device.
+The confirmation request includes the old token, a hash of the metadata and file.</p>
+        <p>3. The hardware chip receives the encrypted message and decrypts with encryption public key.</p>
+        <p>4. If the old token matches, the new token replaces the old token. Otherwise, the message is ignored.</p>
+         <p>5. Then, the hashes sent are checked against the hardware chip\'s stored hashes.</p>
+        <p>6. If it matches, the devices sends an encrypted confirmation.</p>
+         <p>7. The manufacturer responds by recording the video as confirmed and providing a new token for the next communication. </p>
     ]]></string>
        <string name="registration_content"><![CDATA[
         <h1>Device Registration</h1>
@@ -62,13 +85,11 @@
     ]]></string>
     <string name="lessonOne_content"><![CDATA[
         <h3>Demo One: VAP request.</h3>
-        <p> A VAP request is a request to authenticate a video. The simulation is broken up into three level of granularity,
+        <p> A VAP request is a request to authenticate a video. The simulation is broken up into three levels of granularity,
         assuming a video is recorded and their is a metadata file, assuming a video is recorded and metadata needs to be retrieved still,
         and the full real world situation, assuming no video is recorded yet. Ideally, VAP requests are built-in to the video recording process.
-        For the first, a metadata J3M file must be exported by <a href="https://guardianproject.info/informa/">Informacam</a> and a video to the test server.</p>
-        <p>In a complete prototype of the framework, a video\'s
-         metadata will be generated automatically, request to be recorded and verified by device manufacturer\'s datacenter.</p>
-    ]]></string>
+        To try the first one, a metadata J3M file must be exported by<h3> <a href="https://guardianproject.info/informa/">Informacam</a></h3>.</p>
+     ]]></string>
     <string name="lessonOne_user">User</string>
     <string name="lessonOne_user_hint">Me</string>
     <string name="lessonOne_comment">Comment</string>
@@ -105,4 +126,13 @@
     <string name="error_package_error">There was an error with the activity\'s package.</string>
     <string name="error_in_development">This feature is not fully implemented yet.</string>
     <string name="registered_device">Successfully registered device with manufacturer database.</string>
+    <string name="error_connectivity">Failed: Connectivity error or something similar.</string>
+    <string name="failed">Failed</string>
+    <string name="device_registration_confirmed">Device registration has been confirmed and completed.</string>
+    <string name="button_hardware_reset">Simulate VAP Hardware Reset</string>
+    <string name="wipeVAP">Wiped the VAP values and set to \"Unknown\".</string>
+    <string name="refresh">Refresh</string>
+    <string name="refreshed">Resfreshed VAP values successfully.</string>
+    <string name="sam_houston_quote">\"The benefits of education and of useful knowledge, generally diffused through a community, are essential to the preservation of a free government.\"</string>
+    <string name="sam_houston">Sam Houston</string>
 </resources>

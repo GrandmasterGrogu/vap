@@ -1,14 +1,13 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/ContentFrameStyle"
-    tools:context=".SlidePresenterActivity" >
+
 
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        style="@style/ContentFrameStyle"
+        tools:context=".SlidePresenterActivity">
 
         <TextView
             android:id="@+id/registration_content"
@@ -16,14 +15,31 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|fill_horizontal" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/this_android_device_label"
-            android:id="@+id/terms_title"
-            android:textStyle="bold|italic"
-            android:typeface="monospace" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/refreshButton"
+                android:src="@android:drawable/stat_notify_sync"
+                android:tint="#ff37ff04"
+                android:contentDescription="@string/refresh"
+                android:background="@color/common_signin_btn_light_text_default"
+                android:adjustViewBounds="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/this_android_device_label"
+                android:id="@+id/terms_title"
+                android:textStyle="bold|italic"
+                android:typeface="monospace" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -85,6 +101,13 @@
                 android:text="Medium Text"
                 android:id="@+id/vap_token_value" />
         </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_hardware_reset"
+            android:id="@+id/hwResetButton"
+            android:layout_gravity="center_horizontal" />
+
     </LinearLayout>
 
-</FrameLayout>

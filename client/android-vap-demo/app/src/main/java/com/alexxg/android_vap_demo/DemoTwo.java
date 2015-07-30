@@ -225,7 +225,7 @@ public class DemoTwo extends HtmlFragment {
     }
 
 
-    private void showResult(String message) {
+    protected void showResult(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 

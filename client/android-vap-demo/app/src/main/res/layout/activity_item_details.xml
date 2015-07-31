@@ -1,5 +1,7 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
-    android:name="com.alexxg.android_vap_demo.ItemDetailsFragment"
-    tools:layout="@layout/fragment_item_details" android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools" android:id="@+id/item_fragment"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+style="@style/ContentFrameStyle"
+tools:context=".ItemDetails" >
+</ScrollView>

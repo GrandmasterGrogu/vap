@@ -28,14 +28,23 @@ import java.util.List;
  */
 public class DemoTwo extends HtmlFragment {
 
+    // Device String identifiers
     private static final String SDID = "SECRET_DEVICE_ID";
     private static final String DID = "DEVICE_ID";
     private static final String TOKEN = "TOKEN";
     private static final String OLD_TOKEN = "OLD_TOKEN";
     private static final String MDATA = "METADATA";
     private static final String PK = "PUBLIC_KEY";
-    private boolean videoUpload = false;
-    private boolean deviceUpload = false;
+    private static final String  CONFIRMED = "CONFIRMED";
+    private static final String  DEVICE_OR_VIDEO = "DEVICE_OR_VIDEO";
+    // Video String identifiers
+    private static final String  VID_CONFIRMED = "VIDEO_CONFIRMED";
+    private static final String VID = "VIDEO_ID";
+    private static final String VID_DEVICE = "VIDEO_DEVICE_ID";
+    private static final String VID_MDATA = "VIDEO_METADATA";
+
+    private boolean videoSelected = false;
+    private boolean deviceSelected = false;
 
 
     public static class Video extends Model {
@@ -43,6 +52,7 @@ public class DemoTwo extends HtmlFragment {
         private int videoID;
         private String metadata;
         private int deviceID;
+        private int confirm;
 
         public void setVideoID(int videoID) {
             this.videoID = videoID;
@@ -68,6 +78,13 @@ public class DemoTwo extends HtmlFragment {
             return deviceID;
         }
 
+        public Boolean getConfirm() {
+            if(confirm == 0)
+                return false;
+            else
+                return true;
+        }
+
     }
 
 
@@ -79,6 +96,7 @@ public class DemoTwo extends HtmlFragment {
         private String publickey;
         private String metadata;
         private int deviceID;
+        private int confirm;
 
         public void setUid(String uid) {
             this.uid = uid;
@@ -128,6 +146,12 @@ public class DemoTwo extends HtmlFragment {
             return deviceID;
         }
 
+        public Boolean getConfirm() {
+            if(confirm == 0)
+                return false;
+                else
+                return true;
+        }
     }
 
     /**
@@ -181,8 +205,8 @@ public class DemoTwo extends HtmlFragment {
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Video>() {
             @Override
             public void onSuccess(List<Video> models) {
-                videoUpload = true;
-                deviceUpload = false;
+                videoSelected = true;
+                deviceSelected = false;
                 list.setAdapter(new VideoListAdapter(getActivity(), models));
             }
 
@@ -210,8 +234,8 @@ public class DemoTwo extends HtmlFragment {
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Device>() {
             @Override
             public void onSuccess(List<Device> models) {
-                videoUpload = false;
-                deviceUpload = true;
+                videoSelected = false;
+                deviceSelected = true;
                 list.setAdapter(new DeviceListAdapter(getActivity(), models));
             }
 
@@ -304,19 +328,34 @@ public class DemoTwo extends HtmlFragment {
 
             @Override
             public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
+        if(deviceSelected){
+                        Device model = (Device)list.getItemAtPosition(position);
 
-                Device model = (Device)list.getItemAtPosition(position);
-                //showResult(model.getUid());
+                        Intent intent = new Intent(getActivity(),ItemDetails.class);
+                        intent.putExtra(DEVICE_OR_VIDEO,1);
+                        intent.putExtra(SDID,model.getDeviceID());
+                        intent.putExtra(DID,model.getUid());
+                        intent.putExtra(TOKEN,model.getToken());
+                        intent.putExtra(OLD_TOKEN,model.getOldToken());
+                        intent.putExtra(MDATA,model.getMetadata());
+                        intent.putExtra(PK,model.getPublicKey());
+                        intent.putExtra(CONFIRMED,model.getConfirm());
 
-                Intent intent = new Intent(getActivity(),ItemDetails.class);
-                intent.putExtra(SDID,model.getDeviceID());
-                intent.putExtra(DID,model.getUid());
-                intent.putExtra(TOKEN,model.getToken());
-                intent.putExtra(OLD_TOKEN,model.getOldToken());
-                intent.putExtra(MDATA,model.getMetadata());
-                intent.putExtra(PK,model.getPublicKey());
+                        startActivity(intent);
+        }
+                else if(videoSelected){
+                    Video model = (Video)list.getItemAtPosition(position);
+                    //showResult(model.getUid());
 
-                startActivity(intent);
+                    Intent intent = new Intent(getActivity(),ItemDetails.class);
+                    intent.putExtra(DEVICE_OR_VIDEO,2);
+                    intent.putExtra(VID,model.getVideoID());
+                    intent.putExtra(VID_DEVICE,model.getDeviceID());
+                    intent.putExtra(VID_MDATA,model.getMetadata());
+                    intent.putExtra(VID_CONFIRMED,model.getConfirm());
+
+                    startActivity(intent);
+                }
 
                 // Tried writing code to start as fragment. did not work...
            /*    FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();

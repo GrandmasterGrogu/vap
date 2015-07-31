@@ -34,6 +34,7 @@ public class SlidePresenterActivity extends FragmentActivity {
     private List<Fragment> createSlideFragments() {
         final List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(new CoverFragment());
+        fragments.add(new HardwareChipFragment());
         fragments.add(new IntroductionFragment());
         fragments.add(new StepsFragment());
 

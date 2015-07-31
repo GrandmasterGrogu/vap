@@ -148,4 +148,17 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="receive_token">Reviewing new token.</string>
     <string name="receive_old_token">Reviewing the last token.</string>
     <string name="sending_video_confirm">Sending video authentication confirmation request.</string>
+    <string name="device">Device: </string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="device_was_confirmed">Was the device confirmed? </string>
+    <string name="video">Video: </string>
+    <string name="video_was_confirmed">Was the video confirmed? </string>
+    <string name="public_key">Public Key: </string>
+    <string name="metadata_no_html">Metadata: </string>
+    <string name="token_no_html">Token: </string>
+    <string name="oldtoken_no_html">Old Token: </string>
+    <string name="device_no_html">Device: </string>
+    <string name="android_device_id_no_html">Android Device ID: </string>
+    <string name="hardware_title"><![CDATA[<h1>VAP Hardware Chip</h1>]]></string>
 </resources>

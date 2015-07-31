@@ -140,4 +140,12 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="error_authentication_failed">Authentication failed.</string>
     <string name="error_token_no_match">The token from the server and the device do not match.</string>
     <string name="video_authenticated_and_confirmed">The video is confirmed and authenticated!</string>
+    <string name="requested_authentication">Sent a Video Authentication Request.</string>
+    <string name="received_response_confirm_hash">Success. Confirmation response requested by manufacturer.</string>
+    <string name="receive_file_hash">Reviewing file hash.</string>
+    <string name="receive_metadata_hash">Reviewing metadata hash.</string>
+    <string name="receive_videoID">Reviewing video ID assigned.</string>
+    <string name="receive_token">Reviewing new token.</string>
+    <string name="receive_old_token">Reviewing the last token.</string>
+    <string name="sending_video_confirm">Sending video authentication confirmation request.</string>
 </resources>

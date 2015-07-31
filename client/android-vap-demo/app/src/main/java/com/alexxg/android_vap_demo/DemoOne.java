@@ -159,7 +159,7 @@ private static boolean videoUploaded = false;
 			Map<String, Object> params = new HashMap<String, Object>();
 
 			params.put("filehash", filehash); // Instead of uploading the video file, the server can receive a hash to check against.
-			params.put("deviceIdentifier", deviceIdentifier);
+			params.put("deviceID", deviceIdentifier);
 			params.put("token", token);
 			params.put("metadata", metadata);
 			params.put("purpose", purpose);
@@ -358,15 +358,12 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 
 	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata,String videoHash, RestAdapter adapter) {
 		final String metadataHash = computeSHAHash(jsonMetadata);
-	
-showResult(metadataHash);
-		showResult(jsonMetadata);
-		showResult(videoHash);
+
+
 		//GuideApplication app = (GuideApplication)getActivity().getApplication();
 		//RestAdapter adapter = app.getLoopBackAdapter();
 		final VideoRepository repository = adapter.createRepository(VideoRepository.class);
-showResult(repository.getNameForRestUrl());
-		showResult(repository.toString());
+		showResult(getResources().getString(R.string.requested_authentication));
 		repository.greet(videoHash, getSecretDeviceId(), getSecretDeviceToken(), jsonMetadata, PURPOSE_AUTHENTICATE,
 				new Adapter.JsonObjectCallback() {
 					@Override
@@ -380,7 +377,7 @@ showResult(repository.getNameForRestUrl());
 
 					@Override
 					public void onSuccess(JSONObject response) {
-						showResult(getResources().getString(R.string.registered_device));
+						showResult(getResources().getString(R.string.received_response_confirm_hash));
 						if (response.has("filehash")&& response.has("metadatahash") && response.has("token") && response.has("oldtoken") && response.has("purpose") ) {
 							String responseFilehash = "";
 							String responseMetadatahash = "";
@@ -390,6 +387,7 @@ showResult(repository.getNameForRestUrl());
 
 							try {
 								responseFilehash =  response.getString("filehash");
+								showResult(getResources().getString(R.string.receive_file_hash));
 								showResult(responseFilehash);
 
 
@@ -397,6 +395,7 @@ showResult(repository.getNameForRestUrl());
 								e.printStackTrace();
 							}
 							try {
+								showResult(getResources().getString(R.string.receive_metadata_hash));
 								responseMetadatahash = response.getString("metadatahash");
 								showResult(responseMetadatahash);
 
@@ -405,12 +404,14 @@ showResult(repository.getNameForRestUrl());
 								e.printStackTrace();
 							}
 							try {
+								showResult(getResources().getString(R.string.receive_videoID));
 								videoID = response.getInt("purpose");
 								showResult(Integer.toString(videoID));
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
 							try {
+								showResult(getResources().getString(R.string.receive_token));
 								 theNewToken = response.getString("token");
 								showResult(theNewToken);
 
@@ -419,6 +420,7 @@ showResult(repository.getNameForRestUrl());
 							}
 
 							try {
+								showResult(getResources().getString(R.string.receive_old_token));
 								oldToken = response.getString("oldtoken");
 								showResult(oldToken);
 
@@ -431,10 +433,10 @@ showResult(repository.getNameForRestUrl());
 								// Compare the tokens and see if they match.
 								if(getSecretDeviceToken().compareTo(oldToken) == 0) {
 									setSecretDeviceToken(theNewToken);
-
+showResult(getResources().getString(R.string.sending_video_confirm));
 									// This next part is the Video Registration confirmation step.
-									try {
-										repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, response.getInt("videoID"),
+
+										repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, videoID,
 												new Adapter.JsonObjectCallback() {
 													@Override
 													public void onError(Throwable t) {
@@ -454,9 +456,7 @@ showResult(repository.getNameForRestUrl());
 														}
 													}
 												});
-									} catch (JSONException e) {
-										e.printStackTrace();
-									}
+
 								}
 								else{
 									showResult(getResources().getString(R.string.error_authentication_failed));
@@ -466,6 +466,8 @@ showResult(repository.getNameForRestUrl());
 							else{
 								showResult(getResources().getString(R.string.error_authentication_failed));
 								showResult(getResources().getString(R.string.error_video_metadata_no_match));
+									showResult(metadataHash);
+									showResult(responseMetadatahash);
 							}
 						} // end if the response gave back
 						else {
@@ -657,7 +659,17 @@ try {
 	private static String convertToHex(byte[] data) throws java.io.IOException
 	{
 
-
+		StringBuilder buf = new StringBuilder();
+		for (byte b : data) {
+			int halfbyte = (b >>> 4) & 0x0F;
+			int two_halfs = 0;
+			do {
+				buf.append((0 <= halfbyte) && (halfbyte <= 9) ? (char) ('0' + halfbyte) : (char) ('a' + (halfbyte - 10)));
+				halfbyte = b & 0x0F;
+			} while (two_halfs++ < 1);
+		}
+		return buf.toString();
+/*
 		StringBuffer sb = new StringBuffer();
 		String hex=null;
 
@@ -665,35 +677,30 @@ try {
 
 		sb.append(hex);
 
-		return sb.toString();
+		return sb.toString();*/
 	}
 
 // From http://karanbalkar.com/2013/05/tutorial-28-implement-sha1-and-md5-hashing-in-android/
-	public String computeSHAHash(String password)
+	public String computeSHAHash(String text)
 	{
-		MessageDigest mdSha1 = null;
-		String SHAHash = "";
-		try
-		{
-			mdSha1 = MessageDigest.getInstance("SHA-1");
-		} catch (NoSuchAlgorithmException e1) {
-			Log.e("myapp", "Error initializing SHA1 message digest");
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
 		}
 		try {
-			mdSha1.update(password.getBytes("ASCII"));
+			md.update(text.getBytes("utf-8"), 0, text.length());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		byte[] data = mdSha1.digest();
+		byte[] sha1hash = md.digest();
 		try {
-			SHAHash=convertToHex(data);
+			return convertToHex(sha1hash);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return "Android device error: Failed to convert hash to hex.";
 		}
-
-		return SHAHash;
 	}
 
 

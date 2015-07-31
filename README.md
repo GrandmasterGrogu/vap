@@ -1,5 +1,30 @@
 # Video Authentication Framework
 This is an academic project to simulate a video authentication framework. The framework has the goal of establishing non-repudiation, integrity and authentication for videos automatically on modern camera devices.
+#Installation of the App
+Until the [App](https://github.com/alexxgathp/vap/tree/master/client) is published in Google Play, it can be compiled and tested using Android Studio and an Android Emulator in the studio or an actual Android device with the Google USB Driver. 
+#Installation of the Server
+
+The server can optionally be installed, instead of using the provided demo server.
+
+Checkout the repository with "git clone https://github.com/alexxgathp/vap.git".
+
+Create your own MySQL database instance, create a database and import the MySQL database with [vap.sql](https://github.com/alexxgathp/vap/blob/master/server/vap.sql). One easy local MySQL server to use is available on [XAMPP](https://www.apachefriends.org/index.html), which comes with Apache and phpMyAdmin.
+
+Configure [datasources.json](https://github.com/alexxgathp/vap/blob/master/server/datasources.json) with your MySQL [database](https://github.com/alexxgathp/vap/blob/master/server/datasources.json#L8), [host](https://github.com/alexxgathp/vap/blob/master/server/datasources.json#L7), [username](https://github.com/alexxgathp/vap/blob/master/server/datasources.json#L9) and [password](https://github.com/alexxgathp/vap/blob/master/server/datasources.json#L10) information.
+
+Configure the ["host" name](https://github.com/alexxgathp/vap/blob/master/server/config.json#L3), [port](https://github.com/alexxgathp/vap/blob/master/server/config.json#L4) and [URL](https://github.com/alexxgathp/vap/blob/master/server/config.json#L5) in [config.json](https://github.com/alexxgathp/vap/blob/master/server/config.json).
+
+Install npm and [nodeJS](http://nodeJS.org). Run the command npm install 
+
+To have the app compile and point to a local server, uncomment the REST URL in [GuideApplication.java](https://github.com/alexxgathp/vap/blob/master/client/android-vap-demo/app/src/main/java/com/alexxg/android_vap_demo/GuideApplication.java#L22) . Comment out the other URL line.
+
+To start the HTTP server, navigate to the server folder and execute ["node amazonec2_http\\_server.js"](https://github.com/alexxgathp/vap/blob/master/server/amazonec2_http_server.js). Alternatively, if an authentic SSL certificate is available, the HTTPS server may be used ["node server.js"](https://github.com/alexxgathp/vap/blob/master/server/server.js).
+
+#Known Issues
+
+[**HTTPS and self-signed certificates**](https://github.com/alexxgathp/vap/issues/1) - Do not use HTTPS and server.js, unless a valid, not a self-signed, certificate is available.
+
+[**Google Drive not supported**](https://github.com/alexxgathp/vap/issues/2) - Google Drive appears as an option to select files within the app. It is not supported by ACTION\_GET\_CONTENT, so it will not work correctly. The normal FileManager works.
 
 # Credits
 This project is being developed by Alex X. Galloway as part of his Master's degree at Sam Houston State University.

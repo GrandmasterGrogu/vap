@@ -1,3 +1,5 @@
+var crypto = require('crypto') // Cryptographic functions
+var ecdsa = require('ecdsa') // Elliptical Curve Digital Signatures
 module.exports = function(Video) {
 
     var constants = {
@@ -9,9 +11,10 @@ module.exports = function(Video) {
 	
 // A function to record a video's metadata
 
-    Video.greet = function (deviceID, token, metadata, purpose, cb) {
-var error = null;    
-var oldtoken = token;
+    Video.greet = function (filehash, deviceID, token, metadata, purpose, cb) {
+	var error = null;    
+	var oldtoken = token;
+	var newtoken = generateNewToken(deviceID, oldtoken); 
 
 	// If the deviceID is there and matches with the token, then create the video record.
     // Later encapsulate in function checkDeviceIdentifiers(){}	 and / or function checkToken(){}
@@ -25,36 +28,53 @@ var oldtoken = token;
 			   cb(null,null,null,null,null,null,null);
 		   else{
 			     	// TODO: Implement check the digital signature function checkDigSig(){}
-					
+					 
+		model.oldtoken = oldtoken;
+		model.token = newtoken;
+		   model.save(null, function(err, instance){
+			   if(error){
+			   error = err;
+			   cb(null,null,null,null,null,null,error);
+			   }
+		   
+		 
 					// Then, store the metadata of the video, if the purpose wasn't confirmation, associated with the device.
-if(purpose === 0)	 { 
-	  Video.app.models.Video.create({confirm:0,deviceID: deviceID, metadata: metadata.toString()},
-	   function(err, models){
+if(purpose === constants.RECORD)	 { 
+	  Video.app.models.Video.create({confirm:constants.RECORD,deviceID: deviceID, metadata: metadata.toString()},
+	   function(err, newVideoModel){
 		 if(error){
 			   error = err;
 			   cb(null,null,null,null,null,null,error);
 			   }
-		   else if(models == null)
+		   else if(newVideoModel == null)
 			   cb(null,null,null,null,null,null,null);
-		   token = generateNewToken(deviceID, oldtoken);
-		cb(null,null,null,token,oldtoken, purpose,error);       		   	    
+		  
+		cb(null,filehash,crypto.createHash('sha1').update(metadata).digest("hex").toString(),newtoken,oldtoken, newVideoModel.videoID,error);       		   	    
 	   });
 } else{
 	// TODO: update video if videoID is valid with device and confirm, otherwise return nothing or an error message.
-Video.app.models.Video.findOne({where:{videoID: purpose, confirm: 0}}, 
-  function(err, model){
+Video.app.models.Video.findOne({where:{deviceID: deviceID, videoID: purpose, confirm: constants.RECORD}}, 
+  function(err, videoModel){
 		 if(error){
 			   error = err;
 			   cb(null,null,null,null,null,null,error);
 			   }
-		   else if(model == null)
-			   cb(null,null,null,null);
-		   token = generateNewToken(deviceID, oldtoken);
-		cb(null,null,null,token,oldtoken, purpose,error);       		   	    
-	   });
-	}
-      
-		   }
+		   else if(videoModel == null)
+			   cb(null,null,null,null,null,null,null);
+		   videoModel.confirm = constants.CONFIRM_RECORD;
+		   videoModel.save(null, function(err, instance){
+			   if(error){
+			   error = err;
+			   cb(null,null,null,null,null,null,error);
+			   }
+				cb(null,filehash,null,newtoken,oldtoken, purpose,error);   
+		   }); // End video model save
+
+      		   	    
+	   }); // End Find the video model with id and not confirmed
+	} // End else if is not RECORD purpose
+        }); // End Save device new token
+		   } // End else if device with id and token found
 			   
 		  }
 	   );
@@ -64,7 +84,7 @@ Video.app.models.Video.findOne({where:{videoID: purpose, confirm: 0}},
     Video.remoteMethod(
         'greet', 
         {
-          accepts: [{arg: 'deviceID', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'metadata', type: 'object'}, {arg: 'purpose', type: 'number'}],
+          accepts: [{arg: 'filehash', type: 'string'},{arg: 'deviceID', type: 'number'}, {arg: 'token', type: 'string'}, {arg: 'metadata', type: 'string'}, {arg: 'purpose', type: 'number'}],
           returns: [{arg: 'filehash', type: 'string'},{arg: 'metadatahash', type: 'string'},{arg: 'token', type: 'string'}, {arg: 'oldtoken', type: 'string'}, {arg: 'purpose', type: 'number'}, {arg: 'error', type: 'object'}]
         }
     );

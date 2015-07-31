@@ -32,8 +32,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,10 +61,18 @@ private static boolean videoUploaded = false;
 	private static boolean metadataUploaded = false;
 	private static String SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKkbSUT9/Q2uBfGRau6/XJyZhcF5abo7\n" +
 			"b37I5hr3EmwGykdzyk8GSyJK3TOrjyl0sdJsGbFmgQaRyV+DLE7750ECAwEAAQ==";
-	static final int REQUEST_VIDEO_CAPTURE = 3;
-	static final int REQUEST_VIDEO_FILE = 2;
-	static final int REQUEST_JSON_FILE = 1;
-	static final int PURPOSE_REGISTER = 0;
+	private static String SAMPLE_VIDEO_FILE_HASH = "6c367a3596eb03bde47f88e29d5557d1c7c12f5b";
+	private final static int NO_OPTIONS=0;
+	private static final int REQUEST_VIDEO_CAPTURE = 3;
+	private static final int REQUEST_VIDEO_FILE = 2;
+	private static final int REQUEST_JSON_FILE = 1;
+	private static final int PURPOSE_REGISTER = 0;
+	private static final int PURPOSE_AUTHENTICATE = 0;
+
+
+	public DemoOne() {
+
+	}
 
 	public static class Video extends Model {
 
@@ -145,23 +155,26 @@ private static boolean videoUploaded = false;
 				return contract;
 			}
 
-			public void greet(String metadata, int purpose, final VoidCallback callback) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("purpose", purpose);
-				params.put("metadata", metadata);
-				invokeStaticMethod("greet", params, new Adapter.Callback() {
+		public void greet(String filehash,int deviceIdentifier, String token, String metadata, int purpose, final Adapter.JsonObjectCallback callback) {
+			Map<String, Object> params = new HashMap<String, Object>();
 
-					@Override
-					public void onError(Throwable t) {
-						callback.onError(t);
-					}
+			params.put("filehash", filehash); // Instead of uploading the video file, the server can receive a hash to check against.
+			params.put("deviceIdentifier", deviceIdentifier);
+			params.put("token", token);
+			params.put("metadata", metadata);
+			params.put("purpose", purpose);
+			invokeStaticMethod("greet", params, new Adapter.JsonObjectCallback() {
+				@Override
+				public void onError(Throwable t) {
+					callback.onError(t);
+				}
 
-					@Override
-					public void onSuccess(String response) {
-						callback.onSuccess();
-					}
-				});
-			}
+				@Override
+				public void onSuccess(JSONObject response) {
+					callback.onSuccess(response);
+				}
+			});
+		}
 
 	}
 	/**
@@ -240,9 +253,9 @@ public static KeyPair createKeyPair() {
 	 */
 	private void sendRequest(final String jsonMetadata) {
 
-
 		GuideApplication app = (GuideApplication)getActivity().getApplication();
-		RestAdapter adapter = app.getLoopBackAdapter();
+		final RestAdapter adapter = app.getLoopBackAdapter();
+showResult(jsonMetadata);
 // Retrieve secret device ID and secret token
 		// Or retrieve hardware identifier if those are missing.
 		// Check some value to see if it is registered.
@@ -307,7 +320,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 												showResult(theNewToken);
 												setSecretDeviceToken(theNewToken);
 												showResult(getResources().getString(R.string.device_registration_confirmed));
-												sendVideoAuthenticationProtocolRequest(jsonMetadata);
+												sendVideoAuthenticationProtocolRequest(jsonMetadata, SAMPLE_VIDEO_FILE_HASH, adapter);
 											} catch (JSONException e) {
 												e.printStackTrace();
 											}
@@ -325,7 +338,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 			});
 } // End if Secret Device ID and Token is unknown.
 		else{
-	sendVideoAuthenticationProtocolRequest(jsonMetadata);
+	sendVideoAuthenticationProtocolRequest(jsonMetadata, SAMPLE_VIDEO_FILE_HASH, adapter);
 }
 
 
@@ -343,8 +356,124 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
  */
 	}
 
-	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata) {
-	showResult("Made it this far!");
+	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata,String videoHash, RestAdapter adapter) {
+		final String metadataHash = computeSHAHash(jsonMetadata);
+	
+showResult(metadataHash);
+		showResult(jsonMetadata);
+		showResult(videoHash);
+		//GuideApplication app = (GuideApplication)getActivity().getApplication();
+		//RestAdapter adapter = app.getLoopBackAdapter();
+		final VideoRepository repository = adapter.createRepository(VideoRepository.class);
+showResult(repository.getNameForRestUrl());
+		showResult(repository.toString());
+		repository.greet(videoHash, getSecretDeviceId(), getSecretDeviceToken(), jsonMetadata, PURPOSE_AUTHENTICATE,
+				new Adapter.JsonObjectCallback() {
+					@Override
+					public void onError(Throwable t) {
+
+						showResult(getResources().getString(R.string.error_authentication_failed));
+						showResult(t.getMessage());
+
+						t.printStackTrace();
+					}
+
+					@Override
+					public void onSuccess(JSONObject response) {
+						showResult(getResources().getString(R.string.registered_device));
+						if (response.has("filehash")&& response.has("metadatahash") && response.has("token") && response.has("oldtoken") && response.has("purpose") ) {
+							String responseFilehash = "";
+							String responseMetadatahash = "";
+							String theNewToken = "";
+							String oldToken = "";
+							int videoID = 0;
+
+							try {
+								responseFilehash =  response.getString("filehash");
+								showResult(responseFilehash);
+
+
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							try {
+								responseMetadatahash = response.getString("metadatahash");
+								showResult(responseMetadatahash);
+
+
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							try {
+								videoID = response.getInt("purpose");
+								showResult(Integer.toString(videoID));
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							try {
+								 theNewToken = response.getString("token");
+								showResult(theNewToken);
+
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+
+							try {
+								oldToken = response.getString("oldtoken");
+								showResult(oldToken);
+
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							// Check to see if the metadata on the device matches the request sent to the cloud.
+							// A hardware chip would have a protected metadata storage
+							 	if(metadataHash.compareTo(responseMetadatahash) == 0) {
+								// Compare the tokens and see if they match.
+								if(getSecretDeviceToken().compareTo(oldToken) == 0) {
+									setSecretDeviceToken(theNewToken);
+
+									// This next part is the Video Registration confirmation step.
+									try {
+										repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, response.getInt("videoID"),
+												new Adapter.JsonObjectCallback() {
+													@Override
+													public void onError(Throwable t) {
+														showResult(t.toString());
+													}
+
+													@Override
+													public void onSuccess(JSONObject response) {
+														try {
+															String theNewToken = response.getString("token");
+															showResult(theNewToken);
+															setSecretDeviceToken(theNewToken);
+															showResult(getResources().getString(R.string.video_authenticated_and_confirmed));
+
+														} catch (JSONException e) {
+															e.printStackTrace();
+														}
+													}
+												});
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+								}
+								else{
+									showResult(getResources().getString(R.string.error_authentication_failed));
+									showResult(getResources().getString(R.string.error_token_no_match));
+								}
+							}
+							else{
+								showResult(getResources().getString(R.string.error_authentication_failed));
+								showResult(getResources().getString(R.string.error_video_metadata_no_match));
+							}
+						} // end if the response gave back
+						else {
+							showResult(getResources().getString(R.string.error_connectivity));
+						}
+					} // end OnSuccess for Video
+
+				});
 	}
 
 	/* buildDeviceMetadata
@@ -431,11 +560,21 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 */
 	private void userPickMetadata(	)
 	{//showResult("Pick a Metadata File");
+try {
 
-		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
-		pickMedia.setType("application/octet-stream|application/json|*/*");
+	Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
+	pickMedia.setType("application/octet-stream|application/json|*/*"); // This only works on some
+	//	pickMedia.setType("*/*");
 	//	pickMedia.addCategory(Intent.CATEGORY_OPENABLE);
-		startActivityForResult(pickMedia,REQUEST_JSON_FILE);
+	startActivityForResult(pickMedia, REQUEST_JSON_FILE);
+}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+
+			showResult("Failed to load J3M file. Will try with sample JSON");
+			sendRequest("{JSON METADATA SAMPLE: 1}");
+}
 	}
 
 
@@ -511,6 +650,50 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 			Log.e("reading text", "Can not read file: " + e.toString());
 		}
 		return ret;
+	}
+
+
+// From http://karanbalkar.com/2013/05/tutorial-28-implement-sha1-and-md5-hashing-in-android/
+	private static String convertToHex(byte[] data) throws java.io.IOException
+	{
+
+
+		StringBuffer sb = new StringBuffer();
+		String hex=null;
+
+		hex=Base64.encodeToString(data, 0, data.length, NO_OPTIONS);
+
+		sb.append(hex);
+
+		return sb.toString();
+	}
+
+// From http://karanbalkar.com/2013/05/tutorial-28-implement-sha1-and-md5-hashing-in-android/
+	public String computeSHAHash(String password)
+	{
+		MessageDigest mdSha1 = null;
+		String SHAHash = "";
+		try
+		{
+			mdSha1 = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e1) {
+			Log.e("myapp", "Error initializing SHA1 message digest");
+		}
+		try {
+			mdSha1.update(password.getBytes("ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		byte[] data = mdSha1.digest();
+		try {
+			SHAHash=convertToHex(data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return SHAHash;
 	}
 
 

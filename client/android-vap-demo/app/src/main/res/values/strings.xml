@@ -88,7 +88,8 @@ The confirmation request includes the old token, a hash of the metadata and file
         <p> A VAP request is a request to authenticate a video. The simulation is broken up into three levels of granularity,
         assuming a video is recorded and their is a metadata file, assuming a video is recorded and metadata needs to be retrieved still,
         and the full real world situation, assuming no video is recorded yet. Ideally, VAP requests are built-in to the video recording process.
-        To try the first one, a metadata J3M file must be exported by<h3> <a href="https://guardianproject.info/informa/">Informacam</a></h3>.</p>
+        To try the first one, a metadata J3M file must be exported by:</p>
+        <h3> <a href="https://guardianproject.info/informa/">Informacam</a></h3>
      ]]></string>
     <string name="lessonOne_user">User</string>
     <string name="lessonOne_user_hint">Me</string>
@@ -135,4 +136,8 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="refreshed">Resfreshed VAP values successfully.</string>
     <string name="sam_houston_quote">\"The benefits of education and of useful knowledge, generally diffused through a community, are essential to the preservation of a free government.\"</string>
     <string name="sam_houston">Sam Houston</string>
+    <string name="error_video_metadata_no_match">The video metadata hash from the cloud does not match the local copy.</string>
+    <string name="error_authentication_failed">Authentication failed.</string>
+    <string name="error_token_no_match">The token from the server and the device do not match.</string>
+    <string name="video_authenticated_and_confirmed">The video is confirmed and authenticated!</string>
 </resources>

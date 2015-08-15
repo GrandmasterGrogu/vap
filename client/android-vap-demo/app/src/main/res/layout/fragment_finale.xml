@@ -7,20 +7,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="@style/ContentFrameStyle"
-        tools:context=".SlidePresenterActivity">
+        tools:context=".SlidePresenterActivity"
+        android:padding="10dp">
 
     <TextView
         android:id="@+id/finale_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|fill_horizontal" />
+        android:layout_gravity="top|fill_horizontal"
+        android:textColor="#000" />
 
         <TextView
             android:id="@+id/finale_callToAction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:enabled="false" />
+            android:enabled="false"
+            android:textColor="#000" />
 
         <ImageView
         android:layout_width="392dp"

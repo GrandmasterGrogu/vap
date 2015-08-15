@@ -79,6 +79,7 @@ private static boolean videoUploaded = false;
 		private int videoID;
 		private String metadata;
 		private int deviceID;
+		private int confirm;
 
 		public void setVideoID(int videoID) {
 			this.videoID = videoID;
@@ -104,14 +105,25 @@ private static boolean videoUploaded = false;
 			return deviceID;
 		}
 
+		public Boolean getConfirm() {
+			if(confirm == 0)
+				return false;
+			else
+				return true;
+		}
+
 	}
 
 
 	public static class Device extends Model {
 
 		private String uid;
+		private String token;
+		private String oldtoken;
+		private String publickey;
 		private String metadata;
 		private int deviceID;
+		private int confirm;
 
 		public void setUid(String uid) {
 			this.uid = uid;
@@ -119,6 +131,30 @@ private static boolean videoUploaded = false;
 
 		public String getUid() {
 			return uid;
+		}
+
+		public void setToken(String token) {
+			this.token = token;
+		}
+
+		public String getToken() {
+			return token;
+		}
+
+		public void setOldToken(String oldtoken) {
+			this.oldtoken = oldtoken;
+		}
+
+		public String getOldToken() {
+			return oldtoken;
+		}
+
+		public void setPublicKey(String publickey) {
+			this.publickey = publickey;
+		}
+
+		public String getPublicKey() {
+			return publickey;
 		}
 
 		public void setMetadata(String metadata) {
@@ -137,6 +173,12 @@ private static boolean videoUploaded = false;
 			return deviceID;
 		}
 
+		public Boolean getConfirm() {
+			if(confirm == 0)
+				return false;
+			else
+				return true;
+		}
 	}
 
 	/**

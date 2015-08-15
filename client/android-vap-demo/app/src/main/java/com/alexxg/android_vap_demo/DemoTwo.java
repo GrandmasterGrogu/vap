@@ -96,7 +96,7 @@ public class DemoTwo extends HtmlFragment {
         private String publickey;
         private String metadata;
         private int deviceID;
-        private int confirm;
+        private String confirm;
 
         public void setUid(String uid) {
             this.uid = uid;
@@ -147,7 +147,7 @@ public class DemoTwo extends HtmlFragment {
         }
 
         public Boolean getConfirm() {
-            if(confirm == 0)
+            if(confirm == "0")
                 return false;
                 else
                 return true;

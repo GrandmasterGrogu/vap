@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="@style/ContentFrameStyle"
-        tools:context=".SlidePresenterActivity">
+        tools:context=".SlidePresenterActivity"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/registration_content"

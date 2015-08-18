@@ -77,14 +77,21 @@ public class DemoTwo extends HtmlFragment {
         public int getDeviceID() {
             return deviceID;
         }
+        public int getConfirm() {
+            return confirm;
+        }
+        public void setConfirm(int confirm) {
+            this.confirm = confirm;
+        }
 
+/*
         public Boolean getConfirm() {
             if(confirm == 0)
                 return false;
             else
                 return true;
         }
-
+*/
     }
 
 
@@ -96,7 +103,7 @@ public class DemoTwo extends HtmlFragment {
         private String publickey;
         private String metadata;
         private int deviceID;
-        private String confirm;
+        private int confirm;
 
         public void setUid(String uid) {
             this.uid = uid;
@@ -114,19 +121,19 @@ public class DemoTwo extends HtmlFragment {
             return token;
         }
 
-        public void setOldToken(String oldtoken) {
+        public void setOldtoken(String oldtoken) {
             this.oldtoken = oldtoken;
         }
 
-        public String getOldToken() {
+        public String getOldtoken() {
             return oldtoken;
         }
 
-        public void setPublicKey(String publickey) {
+        public void setPublickey(String publickey) {
             this.publickey = publickey;
         }
 
-        public String getPublicKey() {
+        public String getPublickey() {
             return publickey;
         }
 
@@ -146,12 +153,19 @@ public class DemoTwo extends HtmlFragment {
             return deviceID;
         }
 
+        public int getConfirm() {
+            return confirm;
+        }
+        public void setConfirm(int confirm) {
+            this.confirm = confirm;
+        }
+/*
         public Boolean getConfirm() {
             if(confirm == "0")
                 return false;
                 else
                 return true;
-        }
+        }*/
     }
 
     /**
@@ -330,31 +344,34 @@ public class DemoTwo extends HtmlFragment {
             public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
         if(deviceSelected){
                         Device model = (Device)list.getItemAtPosition(position);
-
+                        Boolean confirmNum = false;
+                        if(model.getConfirm()==1)
+                            confirmNum = true;
                         Intent intent = new Intent(getActivity(),ItemDetails.class);
                         intent.putExtra(DEVICE_OR_VIDEO,1);
                         intent.putExtra(SDID,model.getDeviceID());
                         intent.putExtra(DID,model.getUid());
                         intent.putExtra(TOKEN,model.getToken());
-                        intent.putExtra(OLD_TOKEN,model.getOldToken());
+                        intent.putExtra(OLD_TOKEN,model.getOldtoken());
                         intent.putExtra(MDATA,model.getMetadata());
-                        intent.putExtra(PK,model.getPublicKey());
-                        intent.putExtra(CONFIRMED,model.getConfirm());
+                        intent.putExtra(PK,model.getPublickey());
+                        intent.putExtra(CONFIRMED,confirmNum);
 
                         startActivity(intent);
         }
                 else if(videoSelected){
                     Video model = (Video)list.getItemAtPosition(position);
-                    //showResult(model.getUid());
-
+                    Boolean confirmNum = false;
+                                if(model.getConfirm()==1)
+                                    confirmNum = true;
                     Intent intent = new Intent(getActivity(),ItemDetails.class);
                     intent.putExtra(DEVICE_OR_VIDEO,2);
                     intent.putExtra(VID,model.getVideoID());
                     intent.putExtra(VID_DEVICE,model.getDeviceID());
                     intent.putExtra(VID_MDATA,model.getMetadata());
-                    intent.putExtra(VID_CONFIRMED,model.getConfirm());
+                    intent.putExtra(VID_CONFIRMED,confirmNum);
 
-                    startActivity(intent);
+            startActivity(intent);
                 }
 
                 // Tried writing code to start as fragment. did not work...

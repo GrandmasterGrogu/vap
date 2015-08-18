@@ -59,6 +59,18 @@ int deviceOrVideo = theActivity.getDeviceOrVideo();
             text = (TextView)getRootView().findViewById(R.id.vap_token_value);
             text.setText(theActivity.getToken());
 
+            text = (TextView)getRootView().findViewById(R.id.vap_old_token);
+            text.setText(getString(R.string.oldtoken_no_html));
+
+            text = (TextView)getRootView().findViewById(R.id.vap_old_token_value);
+            text.setText(theActivity.getOldToken());
+
+            text = (TextView)getRootView().findViewById(R.id.public_key);
+            text.setText(getString(R.string.public_key));
+
+            text = (TextView)getRootView().findViewById(R.id.public_key_value);
+            text.setText(theActivity.getPublicKey());
+
         }
         else if ( deviceOrVideo== 2)
         {

@@ -257,38 +257,6 @@ private static boolean videoUploaded = false;
 		}
 	}
 
-	// The device would digitally sign each communication in the full protocol.
-	// This digital signing function would be available to anyone including the user.
-	// A protected key pair can be used in devices with technologies like TPM.
-// Found these sample useful generation functions to use here http://stackoverflow.com/questions/30929103/digital-signature-in-java-android-rsa-keys
-public static KeyPair createKeyPair() {
-	KeyPair keyPair = null;
-
-	try {
-		KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
-		keygen.initialize(2048);
-		keyPair = keygen.generateKeyPair();
-	} catch (NoSuchAlgorithmException e) {
-		e.printStackTrace();
-		return null;
-	}
-	return keyPair;
-}
-
-	public static String getPrivateKeyBase64Str(KeyPair keyPair){
-		if (keyPair == null) return null;
-		return getBase64StrFromByte(keyPair.getPrivate().getEncoded());
-	}
-
-	public static String getPublicKeyBase64Str(KeyPair keyPair){
-		if (keyPair == null) return null;
-		return getBase64StrFromByte(keyPair.getPublic().getEncoded());
-	}
-
-	public static String getBase64StrFromByte(byte[] key){
-		if (key == null || key.length == 0) return null;
-		return new String(Base64.encode(key, Base64.DEFAULT));
-	}
 
 	/**
 	 * Sends a device registration request before the VAP request, if necessary.

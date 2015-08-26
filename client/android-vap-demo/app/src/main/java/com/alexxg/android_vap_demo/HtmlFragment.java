@@ -406,7 +406,7 @@ https://github.com/alexxgathp/vap/issues/1
 		generateKeyPair();
 		setSecretDeviceId(id);
 		setSecretDeviceToken(token);
-		setSemiSecretDigitalSignaturePublicKey(ds_public_key);
+		setSemiSecretDigitalSignaturePublicKey(getBase64StrFromByte(VAPpublicKey.getEncoded()));
 		setSecretEncryptionPublicKey(e_public_key);
 	}
 }

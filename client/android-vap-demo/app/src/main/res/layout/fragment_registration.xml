@@ -1,20 +1,33 @@
-
-
+<FrameLayout     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/ContentFrameStyle"
+    tools:context=".SlidePresenterActivity"
+    android:padding="10dp">
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fadeScrollbars="false"
+    android:id="@+id/scrollView" >
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="@style/ContentFrameStyle"
-        tools:context=".SlidePresenterActivity"
-        android:padding="10dp">
+        >
 
         <TextView
             android:id="@+id/registration_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top|fill_horizontal" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_hardware_reset"
+            android:id="@+id/hwResetButton"
+            android:layout_gravity="center_horizontal" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -103,12 +116,34 @@
                 android:id="@+id/vap_token_value" />
         </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_hardware_reset"
-            android:id="@+id/hwResetButton"
-            android:layout_gravity="center_horizontal" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/vap_public_key" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/vap_public_key_value" />
+        </LinearLayout>
 
     </LinearLayout>
 
+        </ScrollView>
+    </FrameLayout>

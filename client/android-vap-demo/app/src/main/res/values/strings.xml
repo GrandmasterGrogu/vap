@@ -161,4 +161,7 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="device_no_html">Device: </string>
     <string name="android_device_id_no_html">Android Device ID: </string>
     <string name="hardware_title"><![CDATA[<h1>VAP Hardware Chip</h1>]]></string>
+    <string name="vap_public_key"><![CDATA[
+        <b>Digital Signature Public Key: </b>
+    ]]></string>
 </resources>

@@ -29,6 +29,11 @@ public class RegistrationFragment extends HtmlFragment {
         setHtmlText(R.id.vap_token, R.string.vap_token);
         text = (TextView)getRootView().findViewById(R.id.vap_token_value);
         text.setText(getSecretDeviceToken());
+
+        setHtmlText(R.id.vap_public_key, R.string.vap_public_key);
+        text = (TextView)getRootView().findViewById(R.id.vap_public_key_value);
+        text.setText(getSemiSecretDigitalSignaturePublicKey());
+
         installRefreshButtonClickHandler();
         installHardwareResetButtonClickHandler();
 

@@ -98,4 +98,35 @@ var random = Math.random().toString();
 return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
 	}
 
+	// A function to verify that the signature matches the public key
+	function checkDigSig(publickey, signature, ){
+		var verifyObject = crypto.createVerify('rsa');
+		var YeaOrNay = false;
+		try{
+			verifyObject.update(data);
+			YeaOrNay = verifyObject.verify(publickey, signature, 'base64');
+		}
+		catch(e){
+			console.log(e);
+		}
+		return YeaOrNay;
+	}
+	
+	// Define verify REST function
+	Video.remoteMethod(
+        'verify', 
+        {
+          accepts: [{arg: 'device', type: 'string'},{arg: 'video', type: 'string'}, {arg: 'signature', type: 'string'}],
+          returns: [{arg: 'valid', type: 'boolean'},{arg: 'metadata', type: 'object'}, {arg: 'error', type: 'object'}]
+        }
+    );
+	
+	// A function to record a video's metadata
+    Video.verify = function (device, video, signature) {
+		var valid = false;
+		valid = checkDigSig();
+		var metadata = null;
+		var error = null;
+		cb(null,valid,metadata,error);  
+	}
 };

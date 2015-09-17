@@ -25,6 +25,7 @@ import com.strongloop.android.remoting.adapters.RestContractItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.BufferedReader;
 import java.io.File;

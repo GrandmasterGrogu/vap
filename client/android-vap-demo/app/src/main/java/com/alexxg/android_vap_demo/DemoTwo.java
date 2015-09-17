@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
@@ -360,7 +362,18 @@ public class DemoTwo extends HtmlFragment {
                         startActivity(intent);
         }
                 else if(videoSelected){
+            // Digital Signature Test Code
+            /*byte[] testSig = getDigitalSignature("TEST", VAPprivateKey);
+            boolean verified = verfiySignature(testSig, "TEST",VAPpublicKey);
+            boolean verified = verfiySignature(     Base64.decode(Base64.encodeToString(testSig, Base64.DEFAULT), Base64.DEFAULT), "TEST",VAPpublicKey);
+
+            showResult(testSig.toString());
+            showResult(Base64.encodeToString(testSig, Base64.DEFAULT));
+            showResult(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
+            showResult(String.valueOf(verified));*/
+
                     Video model = (Video)list.getItemAtPosition(position);
+            processMetadataSignature(model.getMetadata());
                     Boolean confirmNum = false;
                                 if(model.getConfirm()==1)
                                     confirmNum = true;
@@ -392,6 +405,70 @@ public class DemoTwo extends HtmlFragment {
         installButtonClickHandlerViewVideos();
         installButtonClickHandlerViewDevices();
         return getRootView();
+    }
+
+    private void processMetadataSignature(String metadata) {
+        // Digital Signature Test Code
+            /*byte[] testSig = getDigitalSignature("TEST", VAPprivateKey);
+            boolean verified = verfiySignature(testSig, "TEST",VAPpublicKey);
+            boolean verified = verfiySignature(     Base64.decode(Base64.encodeToString(testSig, Base64.DEFAULT), Base64.DEFAULT), "TEST",VAPpublicKey);
+
+            showResult(testSig.toString());
+            showResult(Base64.encodeToString(testSig, Base64.DEFAULT));
+            showResult(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
+            showResult(String.valueOf(verified));*/
+        boolean verified = false;
+        Boolean hashAvailable = false;
+        Boolean signatureAvailable = false;
+        String videoHash = "";
+        String videoDigitalSignature = "";
+        JSONObject mdata = null;
+        try {
+            mdata = new JSONObject(metadata);
+            showResult(mdata.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            showResult("The metadata did not successfully convert to a JSONObject.");
+        }
+
+        try {
+            videoHash = mdata.getString("fileHash");
+            hashAvailable = true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            hashAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the file hash.");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            hashAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the file hash.");
+        }
+
+        try {
+            videoDigitalSignature = mdata.getString("digitalSignature");
+            signatureAvailable = true ;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            signatureAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            signatureAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+        }
+try {
+    if (hashAvailable && signatureAvailable) {
+        verified = verfiySignature(Base64.decode(videoDigitalSignature, Base64.DEFAULT), videoHash, VAPpublicKey);
+    }
+}
+catch (Exception e){
+    e.printStackTrace();
+    showResult("The verification failed due to a highly false or malformed digital signature or file hash received.");
+}
+        showResult("Was the digital signature able to verify?");
+        showResult(String.valueOf(verified));
     }
 
     private void installButtonClickHandlerViewVideos() {

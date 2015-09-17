@@ -91,7 +91,7 @@ The token value is created by the last communication and protects against replay
 	// A protected key pair can be used in devices with technologies like TPM.
 // Found these sample useful generation functions to use here http://stackoverflow.com/questions/30929103/digital-signature-in-java-android-rsa-keys
 	// Also, this was a useful reference http://crypto.stackexchange.com/questions/5646/what-are-the-differences-between-a-digital-signature-a-mac-and-a-hash
-	public static KeyPair createKeyPair() {
+/*	public static KeyPair createKeyPair() {
 		KeyPair keyPair = null;
 
 		try {
@@ -119,31 +119,31 @@ The token value is created by the last communication and protects against replay
 		if (key == null || key.length == 0) return null;
 		return new String(Base64.encode(key, Base64.DEFAULT));
 	}
-
-String mySignature = getDigitalSignature("my_string_", "my_private_string" );
+*/
 
 /*
  * Generated a signed String
  * @param text : string to sign
  * @param strPrivateKey : private key (String format)
  */
-public String getDigitalSignature(String text, String strPrivateKey)  {
+public byte[] getDigitalSignature(String text, PrivateKey pk)  {
 
     try {
-
+//showResult(text);
+		//showResult(strPrivateKey);
         // Get private key from String
-        PrivateKey pk = loadPrivateKey(strPrivateKey);
+       // PrivateKey pk = loadPrivateKey(strPrivateKey);
 
         // text to bytes
         byte[] data = text.getBytes("UTF8");
 
         // signature
-        Signature sig = Signature.getInstance("RSA");
+        Signature sig = Signature.getInstance("SHA1withRSA");
         sig.initSign(pk);
         sig.update(data);
         byte[] signatureBytes = sig.sign();
 
-		return Base64.encodeToString(signatureBytes,Base64.DEFAULT);
+		return signatureBytes;
        // return javax.xml.bind.DatatypeConverter.printBase64Binary(signatureBytes);
 
     }catch(Exception e){
@@ -151,7 +151,10 @@ public String getDigitalSignature(String text, String strPrivateKey)  {
     }
 
 }
-
+/* generateKeyPair
+* Generates a RSA Keypair and stores in KeyStore.
+* It retrieves the KeyStore entry and stores in the protected RSA key pair variables.
+ */
 	private void generateKeyPair(){
 		KeyStore keyStore = null;
 		try {
@@ -288,22 +291,22 @@ private PrivateKey loadPrivateKey(String key64) throws GeneralSecurityException 
  * @param origina: original string to verify
  * @param publicKey: user public key
  */
-public static boolean verfiySignature(String signature, String original, String publicKey){
+public static boolean verfiySignature(byte[] signatureBytes, String original, PublicKey pk){
 
     try{
 
         // Get private key from String
-        PublicKey pk = loadPublicKey(publicKey);
+      //  PublicKey pk = loadPublicKey(publicKey);
 
         // text to bytes
         byte[] originalBytes = original.getBytes("UTF8");
 
         //signature to bytes
         //byte[] signatureBytes = signature.getBytes("UTF8");
-        byte[] signatureBytes = Base64.decode(signature, Base64.DEFAULT);
+       // byte[] signatureBytes = Base64.decode(signature, Base64.DEFAULT);
         // javax.xml.bind.DatatypeConverter.parseBase64Binary(signature);
 
-        Signature sig = Signature.getInstance("RSA");
+        Signature sig = Signature.getInstance("SHA1withRSA");
         sig.initVerify(pk);
         sig.update(originalBytes);
 
@@ -406,7 +409,7 @@ https://github.com/alexxgathp/vap/issues/1
 		generateKeyPair();
 		setSecretDeviceId(id);
 		setSecretDeviceToken(token);
-		setSemiSecretDigitalSignaturePublicKey(getBase64StrFromByte(VAPpublicKey.getEncoded()));
+		setSemiSecretDigitalSignaturePublicKey(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
 		setSecretEncryptionPublicKey(e_public_key);
 	}
 }

@@ -546,7 +546,7 @@ showResult(getResources().getString(R.string.sending_video_confirm));
 		// showResult("Pick a Video");
 		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
 		pickMedia.setType("video/*");
-		startActivityForResult(pickMedia, REQUEST_VIDEO_CAPTURE);
+		startActivityForResult(pickMedia, REQUEST_VIDEO_FILE);
 	}
 
 /* userPickMetadata
@@ -560,7 +560,7 @@ showResult(getResources().getString(R.string.sending_video_confirm));
 		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 		// This if is asking if the activity and package is allowed to do it.
 		if (takeVideoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivityForResult(takeVideoIntent,REQUEST_VIDEO_FILE );
+			startActivityForResult(takeVideoIntent,REQUEST_VIDEO_CAPTURE  );
 			}
 		else{
 			showResult(getResources().getString(R.string.error_package_error));
@@ -599,9 +599,10 @@ try {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_VIDEO_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
+				// Retrieve Video file URI
 				Uri selectedVideoLocation = data.getData();
-                  showResult(selectedVideoLocation.toString());
-				showResult(getResources().getString(R.string.error_in_development));
+
+				sendRequest(generateMetadata(selectedVideoLocation).toString());
 				// Do something with the data...
 				videoUploaded = true;
 			}
@@ -609,11 +610,9 @@ try {
 
 		if (requestCode == REQUEST_JSON_FILE) {
 			if (resultCode == Activity.RESULT_OK) {
+				// Retrieve JSON URI
 				Uri selectedJSONLocation = data.getData();
-				// showResult(selectedJSONLocation.toString());
 				String JsonMetadata = readText(selectedJSONLocation);
-				//showResult(JsonMetadata);
-				//
 				// Do something with the data...
 				metadataUploaded = true;
 				sendRequest(JsonMetadata);
@@ -622,15 +621,86 @@ try {
 
 		if (requestCode == REQUEST_VIDEO_CAPTURE) {
 			if (resultCode == Activity.RESULT_OK) {
+				// Retrieve Video content URI
 				Uri recordedVideoLocation = data.getData();
-				showResult(recordedVideoLocation.toString());
-                showResult(getResources().getString(R.string.error_in_development));
-				//
-				// Do something with the data...
+
+				sendRequest(generateMetadata(recordedVideoLocation).toString());
 
 			}
+
 		}
+		}
+/* generateMetadata
+* Receives a file: or content: URI of a video and generates video metadata for it.
+ * @return A JSONObject
+ */
+	private JSONObject generateMetadata(Uri recordedVideoLocation) {
+		JSONObject videoMetadata = new JSONObject();
+
+		try {
+			String theFileHash = getVideoFileHash(recordedVideoLocation);
+			String digitalSignature = Base64.encodeToString(getDigitalSignature(theFileHash, VAPprivateKey), Base64.DEFAULT);
+
+			videoMetadata.put("fileHash", theFileHash);
+			videoMetadata.put("digitalSignature", digitalSignature);
+			videoMetadata.put("filePath", recordedVideoLocation.toString());
+			//showResult(theFileHash);
+			//	showResult(digitalSignature);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return videoMetadata;
 	}
+
+
+	/* getVideoFileHash
+    * returns empty string or the filehash generated
+     */
+	private String getVideoFileHash(Uri video) {
+	String filehash = "";
+//File videoFile = new File(video.getPath());
+		FileInputStream inputStream = null;
+		if(video.getScheme().equalsIgnoreCase("file")) {
+			try {
+				inputStream = new FileInputStream(new File(video.getPath()));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (video.getScheme().equalsIgnoreCase("content")){
+			try {
+				inputStream = (FileInputStream) getActivity().getApplicationContext().getContentResolver().openInputStream(video);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		MessageDigest digester = null;
+		try {
+			digester = MessageDigest.getInstance("SHA1");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		byte[] bytes = new byte[8192];
+		//inputStream.read
+		int byteCount;
+		try {
+			if (inputStream != null) {
+				while ((byteCount = inputStream.read(bytes)) > 0) {
+                    digester.update(bytes, 0, byteCount);
+                }
+			}
+			else{
+				showResult("Failed filehash generation.");
+				return "test";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] digest = digester.digest();
+filehash = Base64.encodeToString(digest, Base64.DEFAULT);
+		return filehash;
+	}
+
 
 
 // Reads text file from Android Uri that can convert to string

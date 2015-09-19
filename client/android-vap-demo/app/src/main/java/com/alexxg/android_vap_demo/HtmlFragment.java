@@ -41,6 +41,9 @@ import java.util.logging.Logger;
 
 import javax.security.auth.x500.X500Principal;
 
+import static android.os.Debug.startMethodTracing;
+import static android.os.Debug.stopMethodTracing;
+
 public class HtmlFragment extends Fragment {
 	public static final String VAP_FILE = "VideoAuthenticationProtcol_Simulation_File";
 	public static final String VAP_KEYS = "VideoAuthenticationProtcol_KeyPair";
@@ -127,7 +130,7 @@ The token value is created by the last communication and protects against replay
  * @param strPrivateKey : private key (String format)
  */
 public byte[] getDigitalSignature(String text, PrivateKey pk)  {
-
+	startMethodTracing("DigitalSigning"); // Debug and Performance Measuring
     try {
 //showResult(text);
 		//showResult(strPrivateKey);
@@ -142,7 +145,7 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
         sig.initSign(pk);
         sig.update(data);
         byte[] signatureBytes = sig.sign();
-
+stopMethodTracing(); // Debug and Performance Measuring
 		return signatureBytes;
        // return javax.xml.bind.DatatypeConverter.printBase64Binary(signatureBytes);
 
@@ -292,7 +295,7 @@ private PrivateKey loadPrivateKey(String key64) throws GeneralSecurityException 
  * @param publicKey: user public key
  */
 public static boolean verfiySignature(byte[] signatureBytes, String original, PublicKey pk){
-
+	startMethodTracing("VerifySignature"); // Debug and Performance Measuring
     try{
 
         // Get private key from String
@@ -309,7 +312,7 @@ public static boolean verfiySignature(byte[] signatureBytes, String original, Pu
         Signature sig = Signature.getInstance("SHA1withRSA");
         sig.initVerify(pk);
         sig.update(originalBytes);
-
+stopMethodTracing(); // Debug and Performance Measuring
         return sig.verify(signatureBytes);
 
     }catch(Exception e) {

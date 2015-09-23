@@ -115,6 +115,12 @@
                 android:id="@+id/privatekey_value" />
         </LinearLayout>
 
-    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/exportJSON"
+        android:id="@+id/exportJSONbutton" />
+
+</LinearLayout>
 
 

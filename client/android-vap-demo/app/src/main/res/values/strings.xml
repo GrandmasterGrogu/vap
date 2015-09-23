@@ -164,4 +164,5 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="vap_public_key"><![CDATA[
         <b>Digital Signature Public Key: </b>
     ]]></string>
+    <string name="exportJSON">Export JSON</string>
 </resources>

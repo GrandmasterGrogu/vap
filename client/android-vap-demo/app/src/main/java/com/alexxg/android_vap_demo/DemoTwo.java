@@ -223,7 +223,15 @@ public class DemoTwo extends HtmlFragment {
             public void onSuccess(List<Video> models) {
                 videoSelected = true;
                 deviceSelected = false;
-                list.setAdapter(new VideoListAdapter(getActivity(), models));
+               // Limit viewing to the last 50 for the demo
+                int listSize = models.size();
+                if(listSize > 50)
+                {
+                    list.setAdapter(new VideoListAdapter(getActivity(), models.subList(listSize - 51, listSize - 1)));
+                }
+                else{
+                    list.setAdapter(new VideoListAdapter(getActivity(), models));
+                }
             }
 
             @Override

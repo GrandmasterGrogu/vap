@@ -130,7 +130,7 @@ The token value is created by the last communication and protects against replay
  * @param strPrivateKey : private key (String format)
  */
 public byte[] getDigitalSignature(String text, PrivateKey pk)  {
-	startMethodTracing("DigitalSigning"); // Debug and Performance Measuring
+	//startMethodTracing("DigitalSigning"); // Debug and Performance Measuring
     try {
 //showResult(text);
 		//showResult(strPrivateKey);
@@ -145,7 +145,7 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
         sig.initSign(pk);
         sig.update(data);
         byte[] signatureBytes = sig.sign();
-stopMethodTracing(); // Debug and Performance Measuring
+//stopMethodTracing(); // Debug and Performance Measuring
 		return signatureBytes;
        // return javax.xml.bind.DatatypeConverter.printBase64Binary(signatureBytes);
 

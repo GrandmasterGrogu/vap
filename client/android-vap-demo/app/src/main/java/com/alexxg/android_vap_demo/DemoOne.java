@@ -623,7 +623,7 @@ try {
 			if (resultCode == Activity.RESULT_OK) {
 				// Retrieve Video content URI
 				Uri recordedVideoLocation = data.getData();
-
+showResult(recordedVideoLocation.toString());
 				sendRequest(generateMetadata(recordedVideoLocation).toString());
 
 			}
@@ -644,8 +644,9 @@ try {
 			videoMetadata.put("fileHash", theFileHash);
 			videoMetadata.put("digitalSignature", digitalSignature);
 			videoMetadata.put("filePath", recordedVideoLocation.toString());
-			//showResult(theFileHash);
-			//	showResult(digitalSignature);
+			showResult(theFileHash);
+				showResult(digitalSignature);
+			showResult(recordedVideoLocation.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

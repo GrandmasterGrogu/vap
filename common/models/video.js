@@ -99,7 +99,7 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 	}
 
 	// A function to verify that the signature matches the public key
-	function checkDigSig(publickey, signature, ){
+	function checkDigSig(publickey, signature ){
 		var verifyObject = crypto.createVerify('rsa');
 		var YeaOrNay = false;
 		try{
@@ -129,4 +129,36 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		var error = null;
 		cb(null,valid,metadata,error);  
 	}
+	
+	
+	
+/* find50 function returns some device models	
+*
+*/
+		Video.find50 = function (cb) {
+      
+
+		  Video.app.models.Video.find({limit:50, order: 'videoID DESC'}, 
+  function(err, models){
+		 if(err){
+			  
+			   cb(null,err);
+			   }
+	
+		cb(null,models);    
+		   });		   		   	    
+	 	}; 	
+			
+/* DEMO Function
+	* This is for the purpose of demo-ing the VAP.
+	* It gets data from the database according to a query. 
+	* In a real VAP, this would be ludicrously insecure and break confidentiality and the security model.
+	*/
+   Video.remoteMethod(
+        'find50', 
+        {
+          returns: {arg: 'videos', type: 'array'}
+        }
+    );	
+	
 };

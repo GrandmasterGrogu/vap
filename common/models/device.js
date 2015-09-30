@@ -79,10 +79,35 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
    }
         	}; 
 
+/* find50 function returns some device models	
+*
+*/
+		Device.find50 = function (cb) {
+      
+
+		  Device.app.models.Device.find({limit:50, order: 'deviceID DESC'}, 
+  function(err, models){
+		 if(err){
+			  
+			   cb(null,err);
+			   }
+	
+		cb(null,models);    
+		   });		   		   	    
+	 	}; 	
 			
-		
-			
-			
+/* DEMO Function
+	* This is for the purpose of demo-ing the VAP.
+	* It gets data from the database according to a query. 
+	* In a real VAP, this would be ludicrously insecure and break confidentiality and the security model.
+	*/
+   Device.remoteMethod(
+        'find50', 
+        {
+          returns: {arg: 'devices', type: 'array'}
+        }
+    );	
+	
 // At the manufacturer, a public key, to be used for encrypted communication, may be burned in the chip and further protected by a token. 
 // To simulate this, the method will receive the device's identifier and return a public key in base64.			
 
@@ -96,5 +121,6 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
           returns: [{arg: 'deviceID', type: 'number'},{arg: 'publickey', type: 'string'}, {arg: 'token', type: 'string'}, {arg: 'error', type: 'object'}]
         }
     );
-
+	
+	
 };

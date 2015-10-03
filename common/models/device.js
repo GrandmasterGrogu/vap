@@ -46,7 +46,7 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 	   function(err, model){
 		   if(err)
 			   cb(null, null, null, null, error);
-            cb(null,model.deviceID, pubkey, token, error);
+            cb(null,model.deviceID, pubkey, token, null);
 	   });
 	   }
 	   else if(purpose>constants.REGISTER)
@@ -61,7 +61,7 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 			   cb(null,null,null,null,error);
 			   }
 		   else if(model == null)
-			   cb(null,null,null,null,null);
+			   cb(null,null,null,null,{code:1,msg:"Database was unavailable."});
 	    var oldtoken = model.oldtoken;
 		var newtoken = generateToken(deviceIdentifier, oldtoken);  
 		model.oldtoken = model.token;
@@ -69,13 +69,13 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		model.confirm = constants.CONFIRM_REGISTER;
 		   model.save(null, function(err, instance){
 			   
-		cb(null,purpose,token,newtoken,error);    
+		cb(null,purpose,token,newtoken,null);    
 		   });
 		   		   	    
 	   });
 	   }
    else{
-	   cb(null,null,null,null,null);
+	   cb(null,null,null,null,{code:4,msg:"Purpose did not match any action."});
    }
         	}; 
 

@@ -38,6 +38,36 @@
         "nullable": "YES"
       }
     },
+	"filehash": {
+      "type": "String",
+      "required": false,
+      "length": 255,
+      "precision": null,
+      "scale": null,
+      "mysql": {
+        "columnName": "filehash",
+        "dataType": "varchar",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
+      }
+    },
+	 "signature": {
+      "type": "String",
+      "required": false,
+      "length": 2050,
+      "precision": null,
+      "scale": null,
+      "mysql": {
+        "columnName": "signature",
+        "dataType": "text",
+        "dataLength": 2050,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
+    },
       "deviceID": {
       "type": "Number",
       "required": true,

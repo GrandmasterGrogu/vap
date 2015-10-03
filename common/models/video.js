@@ -7,15 +7,12 @@ module.exports = function(Video) {
 		CONFIRM_RECORD : 1
     };
 	
-
-	
 // A function to record a video's metadata
 
     Video.greet = function (filehash, deviceID, token, metadata, purpose, cb) {
 	var error = null;    
 	var oldtoken = token;
-	var newtoken = generateNewToken(deviceID, oldtoken); 
-
+	
 	// If the deviceID is there and matches with the token, then create the video record.
     // Later encapsulate in function checkDeviceIdentifiers(){}	 and / or function checkToken(){}
 	 Video.app.models.Device.findOne({where:{token: token, deviceID: deviceID}}, 
@@ -25,31 +22,45 @@ module.exports = function(Video) {
 			   cb(null,null,null,null,null,null,error);
 			   }
 		   else if(model == null)
-			   cb(null,null,null,null,null,null,null);
+			   cb(null,null,null,null,null,null,{code:3,msg:"Device was not found with the provided token."});
 		   else{
 			     	// TODO: Implement check the digital signature function checkDigSig(){}
-					 
+// Generate a new token for communication
+					var newtoken = generateNewToken(deviceID, oldtoken); 
+		// Parse the metadata into a JavaScript Object
+	var parsedMetadata = null;
+					
+					var signature = null;
+					try{
+					parsedMetadata = JSON.parse(metadata);
+					// If the metadata has the standard VAP digital signature, collect it in a separate variable also.
+					if(parsedMetadata.digitalSignature)
+						signature = parsedMetadata.digitalSignature;
+					}
+					catch(e){
+						console.log(e); // If it fails, just log the error for now.
+					}
 		model.oldtoken = oldtoken;
 		model.token = newtoken;
-		   model.save(null, function(err, instance){
+// Save the new token in the database and record the old one as well.		
+	model.save(null, function(err, instance){
 			   if(error){
 			   error = err;
 			   cb(null,null,null,null,null,null,error);
 			   }
 		   
-		 
-					// Then, store the metadata of the video, if the purpose wasn't confirmation, associated with the device.
+// Then, store the metadata of the video, if the purpose wasn't confirmation, associated with the device.
 if(purpose === constants.RECORD)	 { 
-	  Video.app.models.Video.create({confirm:constants.RECORD,deviceID: deviceID, metadata: metadata.toString()},
+	  Video.app.models.Video.create({filehash:filehash,signature:signature,confirm:constants.RECORD,deviceID: deviceID, metadata: metadata.toString()},
 	   function(err, newVideoModel){
 		 if(error){
 			   error = err;
 			   cb(null,null,null,null,null,null,error);
 			   }
 		   else if(newVideoModel == null)
-			   cb(null,null,null,null,null,null,null);
+			   cb(null,null,null,null,null,null,{code:1,msg:"Database was unavailable."});
 		  
-		cb(null,filehash,crypto.createHash('sha1').update(metadata).digest("hex").toString(),newtoken,oldtoken, newVideoModel.videoID,error);       		   	    
+		cb(null,filehash,crypto.createHash('sha1').update(metadata).digest("hex").toString(),newtoken,oldtoken, newVideoModel.videoID,null);       		   	    
 	   });
 } else{
 	// TODO: update video if videoID is valid with device and confirm, otherwise return nothing or an error message.
@@ -60,14 +71,14 @@ Video.app.models.Video.findOne({where:{deviceID: deviceID, videoID: purpose, con
 			   cb(null,null,null,null,null,null,error);
 			   }
 		   else if(videoModel == null)
-			   cb(null,null,null,null,null,null,null);
+			   cb(null,null,null,null,null,null,{code:2,msg:"Video not found."});
 		   videoModel.confirm = constants.CONFIRM_RECORD;
 		   videoModel.save(null, function(err, instance){
 			   if(error){
 			   error = err;
 			   cb(null,null,null,null,null,null,error);
 			   }
-				cb(null,filehash,null,newtoken,oldtoken, purpose,error);   
+				cb(null,filehash,null,newtoken,oldtoken, purpose,null);   
 		   }); // End video model save
 
       		   	    

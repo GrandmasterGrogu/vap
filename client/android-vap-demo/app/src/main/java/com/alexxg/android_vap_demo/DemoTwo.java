@@ -18,12 +18,19 @@ import android.widget.Toast;
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
+import com.strongloop.android.remoting.adapters.Adapter;
+import com.strongloop.android.remoting.adapters.RestContract;
+import com.strongloop.android.remoting.adapters.RestContractItem;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation for Lesson Two: Existing Data? No Problem.
@@ -171,20 +178,77 @@ public class DemoTwo extends HtmlFragment {
     }
 
     /**
-     * Our custom ModelRepository subclass. See Lesson One for more information.
+     * Our custom ModelRepository subclass.
      */
     public static class VideoRepository extends ModelRepository<Video> {
         public VideoRepository() {
             super("video", Video.class);
         }
+
+        public RestContract createContract() {
+            RestContract contract = super.createContract();
+
+
+            contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/find50", "POST"),
+                    getClassName() + ".find50");
+
+            return contract;
+        }
+
+
+        public void find50(final Adapter.JsonObjectCallback callback) {
+            Map<String, Object> params = new HashMap<String, Object>();
+
+
+            invokeStaticMethod("find50", params, new Adapter.JsonObjectCallback() {
+                @Override
+                public void onError(Throwable t) {
+                    callback.onError(t);
+                }
+
+                @Override
+                public void onSuccess(JSONObject response) {
+                    callback.onSuccess(response);
+                }
+            });
+        }
     }
     /**
-     * Our custom ModelRepository subclass. See Lesson One for more information.
+     * Our custom ModelRepository subclass.
      */
     public static class DeviceRepository extends ModelRepository<Device> {
         public DeviceRepository() {
             super("device", Device.class);
+
         }
+        public RestContract createContract() {
+            RestContract contract = super.createContract();
+
+
+            contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/find50", "POST"),
+                    getClassName() + ".find50");
+
+            return contract;
+        }
+
+
+        public void find50(final Adapter.JsonObjectCallback callback) {
+            Map<String, Object> params = new HashMap<String, Object>();
+
+
+            invokeStaticMethod("find50", params, new Adapter.JsonObjectCallback() {
+                @Override
+                public void onError(Throwable t) {
+                    callback.onError(t);
+                }
+
+                @Override
+                public void onSuccess(JSONObject response) {
+                    callback.onSuccess(response);
+                }
+            });
+        }
+
     }
 
 
@@ -218,29 +282,58 @@ public class DemoTwo extends HtmlFragment {
         //    the server for all Cars, filling out our ListView with the results. In this case,
         //    the Repository is really the workhorse; the Model is just a simple container.
 
+       repository.find50(new Adapter.JsonObjectCallback() {
+           @Override
+           public void onSuccess(JSONObject response) {
+               videoSelected = true;
+               deviceSelected = false;
+               List<JSONObject> videoList = new ArrayList<JSONObject>();
+               // Limit viewing to the last 50 for the demo
+               try {
+                   JSONArray temp = response.getJSONArray("videos");
+                   if (temp != null) {
+                       for (int i = 0; i < temp.length(); i++) {
+                           videoList.add((JSONObject) temp.get(i));
+                       }
+                   }
+               } catch (JSONException e) {
+                   e.printStackTrace();
+                   showResult("Failed to load.");
+                   return;
+               }
+               if (videoList != null) {
+                   list.setAdapter(new VideoListAdapter(getActivity(), videoList));
+               }
+           }
+
+           @Override
+           public void onError(Throwable t) {
+               showResult("Failed to load.");
+               showResult(t.toString());
+           }
+       });
+        /*
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Video>() {
             @Override
             public void onSuccess(List<Video> models) {
                 videoSelected = true;
                 deviceSelected = false;
-               // Limit viewing to the last 50 for the demo
+                // Limit viewing to the last 50 for the demo
                 int listSize = models.size();
-                if(listSize > 50)
-                {
+                if (listSize > 50) {
                     list.setAdapter(new VideoListAdapter(getActivity(), models.subList(listSize - 51, listSize - 1)));
-                }
-                else{
+                } else {
                     list.setAdapter(new VideoListAdapter(getActivity(), models));
                 }
             }
 
             @Override
             public void onError(Throwable t) {
-               // Log.e(getTag(), "Cannot save Note model.", t);
+                // Log.e(getTag(), "Cannot save Note model.", t);
                 showResult("Failed to load.");
                 showResult(t.toString());
             }
-        });
+        });*/
     }
 
     private void viewDevices() {
@@ -254,7 +347,7 @@ public class DemoTwo extends HtmlFragment {
         // 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
         //    the server for all Cars, filling out our ListView with the results. In this case,
         //    the Repository is really the workhorse; the Model is just a simple container.
-
+/*
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Device>() {
             @Override
             public void onSuccess(List<Device> models) {
@@ -269,7 +362,7 @@ public class DemoTwo extends HtmlFragment {
                 showResult("Failed to load.");
                 showResult(t.toString());
             }
-        });
+        });*/
     }
 
 
@@ -280,8 +373,8 @@ public class DemoTwo extends HtmlFragment {
     /**
      * Basic ListAdapter implementation using our custom Model type.
      */
-    private static class VideoListAdapter extends ArrayAdapter<Video> {
-        public VideoListAdapter(Context context, List<Video> list) {
+    private static class VideoListAdapter extends ArrayAdapter<JSONObject> {
+        public VideoListAdapter(Context context, List<JSONObject> list) {
             super(context, 0, list);
         }
 
@@ -292,12 +385,17 @@ public class DemoTwo extends HtmlFragment {
                         android.R.layout.simple_list_item_1, null);
             }
 
-            Video model = getItem(position);
+            JSONObject model = getItem(position);
             if (model == null) return convertView;
 
             TextView textView = (TextView)convertView.findViewById(
                     android.R.id.text1);
-            Object [] arguments = {String.valueOf(model.getVideoID()),String.valueOf(model.getDeviceID())};
+            Object [] arguments = new Object[0];
+            try {
+                arguments = new Object[]{String.valueOf(model.getInt("videoID")),String.valueOf(model.getInt("deviceID"))};
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             textView.setText(MessageFormat.format("Video {0} from Device {1}", arguments));
 
             return convertView;
@@ -307,8 +405,8 @@ public class DemoTwo extends HtmlFragment {
     /**
      * Basic ListAdapter implementation using our custom Model type.
      */
-    private static class DeviceListAdapter extends ArrayAdapter<Device> {
-        public DeviceListAdapter(Context context, List<Device> list) {
+    private static class DeviceListAdapter extends ArrayAdapter<JSONObject> {
+        public DeviceListAdapter(Context context, List<JSONObject> list) {
             super(context, 0, list);
         }
 
@@ -319,12 +417,17 @@ public class DemoTwo extends HtmlFragment {
                         android.R.layout.simple_list_item_1, null);
             }
 
-            Device model = getItem(position);
+            JSONObject model = getItem(position);
             if (model == null) return convertView;
 
             TextView textView = (TextView)convertView.findViewById(
                     android.R.id.text1);
-            Object [] arguments = {String.valueOf(model.getDeviceID())};
+            Object [] arguments = new Object[0];
+            try {
+                arguments = new Object[]{String.valueOf(String.valueOf(model.getInt("deviceID")))};
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             textView.setText(MessageFormat.format("Device {0}", arguments));
 
             return convertView;
@@ -353,20 +456,26 @@ public class DemoTwo extends HtmlFragment {
             @Override
             public void onItemClick(AdapterView arg0, View arg1, int position, long arg3) {
         if(deviceSelected){
-                        Device model = (Device)list.getItemAtPosition(position);
+            JSONObject model = (JSONObject)list.getItemAtPosition(position);
+            Intent intent = new Intent(getActivity(),ItemDetails.class);
                         Boolean confirmNum = false;
-                        if(model.getConfirm()==1)
-                            confirmNum = true;
-                        Intent intent = new Intent(getActivity(),ItemDetails.class);
-                        intent.putExtra(DEVICE_OR_VIDEO,1);
-                        intent.putExtra(SDID,model.getDeviceID());
-                        intent.putExtra(DID,model.getUid());
-                        intent.putExtra(TOKEN,model.getToken());
-                        intent.putExtra(OLD_TOKEN,model.getOldtoken());
-                        intent.putExtra(MDATA,model.getMetadata());
-                        intent.putExtra(PK,model.getPublickey());
-                        intent.putExtra(CONFIRMED,confirmNum);
 
+            try {
+                if(model.getInt("confirm")==1)
+                    confirmNum = true;
+
+
+                        intent.putExtra(DEVICE_OR_VIDEO,1);
+                        intent.putExtra(SDID,model.getInt("deviceID"));
+                        intent.putExtra(DID, model.getString("uid"));
+                        intent.putExtra(TOKEN,model.getString("token"));
+                        intent.putExtra(OLD_TOKEN,model.getString("oldtoken"));
+                        intent.putExtra(MDATA,model.getString("metadata"));
+                        intent.putExtra(PK,model.getString("publickey"));
+                        intent.putExtra(CONFIRMED,confirmNum);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
                         startActivity(intent);
         }
                 else if(videoSelected){
@@ -379,19 +488,23 @@ public class DemoTwo extends HtmlFragment {
             showResult(Base64.encodeToString(testSig, Base64.DEFAULT));
             showResult(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
             showResult(String.valueOf(verified));*/
+            Intent intent = new Intent(getActivity(),ItemDetails.class);
 
-                    Video model = (Video)list.getItemAtPosition(position);
-            processMetadataSignature(model.getMetadata());
-                    Boolean confirmNum = false;
-                                if(model.getConfirm()==1)
+            JSONObject model = (JSONObject)list.getItemAtPosition(position);
+            try {
+               // processMetadataSignature(model.getString("metadata"));
+
+            Boolean confirmNum = false;
+                                if(model.getInt("confirm")==1)
                                     confirmNum = true;
-                    Intent intent = new Intent(getActivity(),ItemDetails.class);
                     intent.putExtra(DEVICE_OR_VIDEO,2);
-                    intent.putExtra(VID,model.getVideoID());
-                    intent.putExtra(VID_DEVICE,model.getDeviceID());
-                    intent.putExtra(VID_MDATA,model.getMetadata());
+                    intent.putExtra(VID,model.getInt("videoID"));
+                    intent.putExtra(VID_DEVICE,model.getInt("deviceID"));
+                    intent.putExtra(VID_MDATA,model.getString("metadata"));
                     intent.putExtra(VID_CONFIRMED,confirmNum);
-
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             startActivity(intent);
                 }
 
@@ -414,17 +527,9 @@ public class DemoTwo extends HtmlFragment {
         installButtonClickHandlerViewDevices();
         return getRootView();
     }
-
+/*
     private void processMetadataSignature(String metadata) {
-        // Digital Signature Test Code
-            /*byte[] testSig = getDigitalSignature("TEST", VAPprivateKey);
-            boolean verified = verfiySignature(testSig, "TEST",VAPpublicKey);
-            boolean verified = verfiySignature(     Base64.decode(Base64.encodeToString(testSig, Base64.DEFAULT), Base64.DEFAULT), "TEST",VAPpublicKey);
 
-            showResult(testSig.toString());
-            showResult(Base64.encodeToString(testSig, Base64.DEFAULT));
-            showResult(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
-            showResult(String.valueOf(verified));*/
         boolean verified = false;
         Boolean hashAvailable = false;
         Boolean signatureAvailable = false;
@@ -478,7 +583,7 @@ catch (Exception e){
         showResult("Was the digital signature able to verify?");
         showResult(String.valueOf(verified));
     }
-
+*/
     private void installButtonClickHandlerViewVideos() {
         final Button button = (Button) getRootView().findViewById(R.id.viewVideos);
         button.setOnClickListener(new View.OnClickListener() {

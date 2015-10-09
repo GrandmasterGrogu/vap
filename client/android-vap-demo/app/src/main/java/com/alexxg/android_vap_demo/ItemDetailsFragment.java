@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import java.io.IOException;
 public class ItemDetailsFragment extends HtmlFragment {
 
     private static final String LOG_TAG = "LOG";
-
+    private String metadata;
     public ItemDetailsFragment() {
     }
 
@@ -115,8 +116,10 @@ int deviceOrVideo = theActivity.getDeviceOrVideo();
             text.setText(getString(R.string.metadata_no_html));
 
             text = (TextView)getRootView().findViewById(R.id.metadata_value);
-            text.setText(theActivity.getVideoMetadata());
-            installExportJSONButtonClickHandler(theActivity);
+            metadata = theActivity.getVideoMetadata();
+            text.setText(metadata);
+           installExportJSONButtonClickHandler();
+            installVerifyToDeviceButtonClickHandler();
         }
 
         return getRootView();
@@ -127,7 +130,7 @@ int deviceOrVideo = theActivity.getDeviceOrVideo();
 /* installExportJSONButtonClickHandler
 A function to install the button
 */
-    private void installExportJSONButtonClickHandler(final ItemDetails theActivity) {
+   /* private void installExportJSONButtonClickHandler(final ItemDetails theActivity) {
         final Button button = (Button) getRootView().findViewById(R.id.exportJSONbutton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -135,12 +138,32 @@ A function to install the button
                // exportJSON(theActivity);
             }
         });
+    }*/
+
+    private void installExportJSONButtonClickHandler() {
+        final Button button = (Button) getRootView().findViewById(R.id.exportJSONbutton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                exportJSON();
+            }
+        });
     }
+
+    private void installVerifyToDeviceButtonClickHandler() {
+        final Button button = (Button) getRootView().findViewById(R.id.verifyButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                processMetadataSignature(metadata);
+            }
+        });
+    }
+
 
 /* exportJSON
 A function to trigger export of JSON
 */
-    private void exportJSON(ItemDetails theActivity) {
+    private void exportJSON() {
+        ItemDetails theActivity = (ItemDetails) getActivity();
         String filename = "Video"+theActivity.getVideoID()+"-"+theActivity.getVideoDeviceID()+ "-VAP.json";
         String string = buildJSON(theActivity);
         if(isExternalStorageWritable()){
@@ -180,7 +203,10 @@ A function to trigger export of JSON
             }
         }
     }
-
+/* buildJSON
+* Parameter - the activity
+ * returns - A JSON String
+ */
     private String buildJSON(ItemDetails theActivity) {
         JSONObject theJSON = new JSONObject();
         JSONObject metadata = null;
@@ -223,6 +249,74 @@ A function to trigger export of JSON
         }
         return theJSON.toString();
     }
+
+    /* processMetadataSignature - This verifies if a video belongs to the user's device
+    * Parameter - A metadata string with the proper public key, signature information, hash.
+     */
+    private void processMetadataSignature(String metadata) {
+        // Digital Signature Test Code
+            /*byte[] testSig = getDigitalSignature("TEST", VAPprivateKey);
+            boolean verified = verfiySignature(testSig, "TEST",VAPpublicKey);
+            boolean verified = verfiySignature(     Base64.decode(Base64.encodeToString(testSig, Base64.DEFAULT), Base64.DEFAULT), "TEST",VAPpublicKey);
+
+            showResult(testSig.toString());
+            showResult(Base64.encodeToString(testSig, Base64.DEFAULT));
+            showResult(Base64.encodeToString(VAPpublicKey.getEncoded(), Base64.DEFAULT));
+            showResult(String.valueOf(verified));*/
+        boolean verified = false;
+        Boolean hashAvailable = false;
+        Boolean signatureAvailable = false;
+        String videoHash = "";
+        String videoDigitalSignature = "";
+        JSONObject mdata = null;
+        try {
+            mdata = new JSONObject(metadata);
+            showResult(mdata.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            showResult("The metadata did not successfully convert to a JSONObject.");
+        }
+
+        try {
+            videoHash = mdata.getString("fileHash");
+            hashAvailable = true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            hashAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the file hash.");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            hashAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the file hash.");
+        }
+
+        try {
+            videoDigitalSignature = mdata.getString("digitalSignature");
+            signatureAvailable = true ;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            signatureAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            signatureAvailable = false;
+            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+        }
+        try {
+            if (hashAvailable && signatureAvailable) {
+                verified = verfiySignature(Base64.decode(videoDigitalSignature, Base64.DEFAULT), videoHash, VAPpublicKey);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            showResult("The verification failed due to a highly false or malformed digital signature or file hash received.");
+        }
+        showResult("Was the digital signature able to verify?");
+        showResult(String.valueOf(verified));
+    }
+
 
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {

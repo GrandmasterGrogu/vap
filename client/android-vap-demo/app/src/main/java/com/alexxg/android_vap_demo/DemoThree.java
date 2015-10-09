@@ -11,21 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.loopback.callbacks.VoidCallback;
-
 import com.strongloop.android.remoting.adapters.Adapter;
 import com.strongloop.android.remoting.adapters.RestContract;
 import com.strongloop.android.remoting.adapters.RestContractItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,8 +29,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -45,7 +38,7 @@ import java.util.Map;
 /**
  * Implementation for Lesson One: One Model, Hold the Schema
  */
-public class DemoOne extends HtmlFragment {
+public class DemoThree extends HtmlFragment {
 	/**
 	 * This custom subclass of Model is the closest thing to a "schema" the Note model has.
 	 *
@@ -71,7 +64,7 @@ private static boolean videoUploaded = false;
 	private static final int PURPOSE_AUTHENTICATE = 0;
 
 
-	public DemoOne() {
+	public DemoThree() {
 
 	}
 
@@ -192,13 +185,13 @@ private static boolean videoUploaded = false;
 			public RestContract createContract() {
 				RestContract contract = super.createContract();
 
-				contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/greet", "POST"),
-						getClassName() + ".greet");
+				contract.addItem(new RestContractItem("/" + getNameForRestUrl() + "/verify", "POST"),
+						getClassName() + ".verify");
 
 				return contract;
 			}
 
-		public void greet(String filehash,int deviceIdentifier, String token, String metadata, int purpose, final Adapter.JsonObjectCallback callback) {
+		public void verify(String deviceIdentifier, String videoIdentifier, String metadata, int purpose, final Adapter.JsonObjectCallback callback) {
 			Map<String, Object> params = new HashMap<String, Object>();
 
 			params.put("filehash", filehash); // Instead of uploading the video file, the server can receive a hash to check against.
@@ -760,7 +753,7 @@ filehash = Base64.encodeToString(digest, Base64.DEFAULT);
 
 
 // From http://karanbalkar.com/2013/05/tutorial-28-implement-sha1-and-md5-hashing-in-android/
-	private static String convertToHex(byte[] data) throws java.io.IOException
+	private static String convertToHex(byte[] data) throws IOException
 	{
 
 		StringBuilder buf = new StringBuilder();

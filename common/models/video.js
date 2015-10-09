@@ -63,7 +63,7 @@ if(purpose === constants.RECORD)	 {
 		cb(null,filehash,crypto.createHash('sha1').update(metadata).digest("hex").toString(),newtoken,oldtoken, newVideoModel.videoID,null);       		   	    
 	   });
 } else{
-	// TODO: update video if videoID is valid with device and confirm, otherwise return nothing or an error message.
+	//Update video if videoID is valid with device and confirm, otherwise return nothing or an error message.
 Video.app.models.Video.findOne({where:{deviceID: deviceID, videoID: purpose, confirm: constants.RECORD}}, 
   function(err, videoModel){
 		 if(error){
@@ -108,8 +108,10 @@ var current_date = (new Date()).valueOf().toString();
 var random = Math.random().toString();
 return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
 	}
-
+/*
 	// A function to verify that the signature matches the public key
+	// DEPRECATED: This function may not be necessary for the prototype,
+	// since the client may do all the checking of the digital signature.
 	function checkDigSig(publickey, signature ){
 		var verifyObject = crypto.createVerify('rsa');
 		var YeaOrNay = false;
@@ -122,24 +124,67 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		}
 		return YeaOrNay;
 	}
+	*/
+	
 	
 	// Define verify REST function
 	Video.remoteMethod(
         'verify', 
         {
           accepts: [{arg: 'device', type: 'string'},{arg: 'video', type: 'string'}, {arg: 'signature', type: 'string'}],
-          returns: [{arg: 'valid', type: 'boolean'},{arg: 'metadata', type: 'object'}, {arg: 'error', type: 'object'}]
+          returns: [{arg: 'valid', type: 'boolean'},{arg: 'metadata', type: 'string'}, {arg: 'error', type: 'object'}]
         }
     );
 	
-	// A function to record a video's metadata
-    Video.verify = function (device, video, signature) {
+	/* Video.verify() 
+	A function to record a video's metadata
+     @Parameters	
+	 device: In a protocol, it could be any public identifier of the device. The public key will be used in this prototype.
+     video: The filehash or public identifier of the video
+	 signature:
+	@Return
+	valid: Boolean yes or no.
+	metadata: Any metadata that the manufacturer wishes to return.
+	Also, in theory, watermark or fingerprint information could be provided, anything useful to make public.
+	error: Any error messages 
+	*/
+	Video.verify = function (device, video, signature, cb) {
 		var valid = false;
-		valid = checkDigSig();
+		
+		if(device == null)
+				cb(null,valid,null,{msg: "No device identifier was sent, such as the public key."});
+		if(video == null)
+				cb(null,valid,null,{msg: "No video identifier was sent, such as the file hash."});
+		if(signature == null)
+				cb(null,valid,null,{msg: "No digital signature was provided."});
+		
 		var metadata = null;
 		var error = null;
-		cb(null,valid,metadata,error);  
-	}
+		
+		Video.app.models.Device.findOne({where:{publickey:device, confirm: constants.CONFIRM_RECORD}}, 
+  function(err, deviceModel){
+	  if(err){
+		error = err;		
+		}
+		if(!err & deviceModel ==null)
+		{
+		error = {msg: "The device is not registered."};
+		}
+		if(err || deviceModel ==null){
+			cb(null,valid,metadata,error);
+			}
+		Video.app.models.Video.findOne({where:{filehash: video,deviceID:deviceModel.deviceID, confirm: constants.CONFIRM_RECORD}}, 
+  function(err, videoModel){
+	  if(err){error = err;}
+	  if(!err & videoModel ==null)
+		{
+		error = {msg: "The video is not registered or confirmed as authenticated."};
+		}
+	  if(videoModel){metadata = videoModel.metadata; valid= true;}
+		cb(null,valid,metadata,error);
+  });// end Video find		
+	});
+	} // end Video.verify()
 	
 	
 	

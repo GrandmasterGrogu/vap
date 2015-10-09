@@ -4,10 +4,10 @@
     "connector": "memory"
   },
   "media_history": {
-  "host": "localhost",
-  "database": "media_history",
-    "username": "root",
-    "password": "",
+  "host": "vap.czgptfmeuppd.us-east-1.rds.amazonaws.com",
+  "database": "vapserver",
+    "username": "vaprdsdb",
+    "password": "JDurZr7QqPvxUhTD",
     "name": "media_history",
     "connector": "mysql"
   }

@@ -23,6 +23,7 @@ public class ItemDetails extends FragmentActivity {
     private static final String VID = "VIDEO_ID";
     private static final String VID_MDATA = "VIDEO_METADATA";
     private static final String VID_DEVICE = "VIDEO_DEVICE_ID";
+    private static final String VID_PUBLIC_KEY = "VIDEO_PUBLIC_KEY";
 
     private int deviceOrVideo;
     private int secretDeviceID;
@@ -36,6 +37,7 @@ public class ItemDetails extends FragmentActivity {
     private int videoID;
     private int videoDeviceID;
     private String videoMetadata;
+    private String videoPublicKey;
     private Boolean confirmedVideo;
 
     @Override
@@ -77,11 +79,13 @@ Bundle getThem = savedInstanceState;
                 videoID = getThem.getInt(VID);
                 videoDeviceID = getThem.getInt(VID_DEVICE);
                 videoMetadata = getThem.getString(VID_MDATA);
+                videoPublicKey = getThem.getString(VID_PUBLIC_KEY);
                 confirmedVideo = getThem.getBoolean(VID_CONFIRMED);
             }else{
                 videoID = getThem.getInt(VID);
                 videoDeviceID = getThem.getInt(VID_DEVICE);
                 videoMetadata = (String) getThem.getSerializable(VID_MDATA);
+                videoPublicKey = (String) getThem.getSerializable(VID_PUBLIC_KEY);
                 confirmedVideo = (Boolean) getThem.getBoolean(VID_CONFIRMED);
             }
         }
@@ -122,6 +126,7 @@ Bundle getThem = savedInstanceState;
     public int getVideoID(){return videoID;}
     public int getVideoDeviceID(){return videoDeviceID;}
     public String getVideoMetadata(){return videoMetadata;}
+    public String getVideoPublicKey(){return videoPublicKey;}
     public Boolean getConfirmedVideo(){return confirmedVideo;}
 
 }

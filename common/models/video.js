@@ -194,7 +194,7 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		Video.find50 = function (cb) {
       
 
-		  Video.app.models.Video.find({limit:50, order: 'videoID DESC'}, 
+		  Video.app.models.Video.find({limit:50, order: 'videoID DESC'include:'device'}, 
   function(err, models){
 		 if(err){
 			  

@@ -84,11 +84,11 @@ The confirmation request includes the old token, a hash of the metadata and file
         <b>Metadata: </b>
     ]]></string>
     <string name="lessonOne_content"><![CDATA[
-        <h3>Demo One: VAP request.</h3>
-        <p> A VAP request is a request to authenticate a video. The simulation is broken up into three levels of granularity,
-        assuming a video is recorded and their is a metadata file, assuming a video is recorded and metadata needs to be retrieved still,
-        and the full real world situation, assuming no video is recorded yet. Ideally, VAP requests are built-in to the video recording process.
-        To try the first one, a metadata J3M file must be exported by:</p>
+        <h3>Demo One: VAP Authentication Request.</h3>
+        <p> This simulation is broken up into three levels of granularity,
+        assuming a video is recorded by Informacam and their is a metadata file, assuming a video is recorded and metadata needs to be retrieved still,
+        and the full real world situation, assuming no video is recorded yet. The first one does not work with Demo Three, as it was the first preliminary one made.
+        Instead of a VAP-style metadata, it uses a metadata J3M file that must be exported by:</p>
         <h3> <a href="https://guardianproject.info/informa/">Informacam</a></h3>
      ]]></string>
     <string name="lessonOne_user">User</string>
@@ -100,9 +100,12 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="lessonTwo_content"><![CDATA[
         <h3>Demo Two: Manufacturer\'s Database.</h3>
     ]]></string>
-    <string name="lessonThree_content"><![CDATA[
-        <h3>Lesson Three: Don\'t Outgrow, Outbuild.</h3>
-    ]]></string>
+    <string name="demoThree_content"><![CDATA[
+        <h3>Demo Three: VAP Verification Request.</h3>
+        <p> A VAP verification request is sent by a device that receives a video from a VAP-compliant camera device
+        that claims to have produced the video. The receiving device requests with the claimer\'s device identifier, video identifier and digital signature.
+        To simplify the data needed, the device ID used here is the public key, and the video ID used is the file hash matching the signature.</p>
+     ]]></string>
     <string name="warning_mapsNotAvailable">
         Your device does not support Google Maps.
         Locations will be displayed in a list. To get an interactive map view,
@@ -166,4 +169,5 @@ The confirmation request includes the old token, a hash of the metadata and file
     ]]></string>
     <string name="exportJSON">Export VAP JSON</string>
     <string name="verifyText">Verify if matches this device</string>
+    <string name="select_vap_json">Select VAP JSON To Verify</string>
 </resources>

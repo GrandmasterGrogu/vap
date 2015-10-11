@@ -51,7 +51,7 @@ public class DemoTwo extends HtmlFragment {
     private static final String VID = "VIDEO_ID";
     private static final String VID_DEVICE = "VIDEO_DEVICE_ID";
     private static final String VID_MDATA = "VIDEO_METADATA";
-
+    private static final String VID_PUBLIC_KEY = "VIDEO_PUBLIC_KEY";
     private boolean videoSelected = false;
     private boolean deviceSelected = false;
 
@@ -491,6 +491,16 @@ public class DemoTwo extends HtmlFragment {
             Intent intent = new Intent(getActivity(),ItemDetails.class);
 
             JSONObject model = (JSONObject)list.getItemAtPosition(position);
+            String publicKey = "";
+            showResult(model.toString());
+            try {
+                JSONObject videoDevice = model.getJSONObject("device");
+            publicKey = videoDevice.getString("publickey");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            showResult("Error: Could not extract Device object.");
+            }
+
             try {
                // processMetadataSignature(model.getString("metadata"));
 
@@ -502,6 +512,7 @@ public class DemoTwo extends HtmlFragment {
                     intent.putExtra(VID_DEVICE,model.getInt("deviceID"));
                     intent.putExtra(VID_MDATA,model.getString("metadata"));
                     intent.putExtra(VID_CONFIRMED,confirmNum);
+                intent.putExtra(VID_PUBLIC_KEY, publicKey);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

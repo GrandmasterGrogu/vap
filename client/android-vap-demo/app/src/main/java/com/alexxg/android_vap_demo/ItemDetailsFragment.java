@@ -118,6 +118,13 @@ int deviceOrVideo = theActivity.getDeviceOrVideo();
             text = (TextView)getRootView().findViewById(R.id.metadata_value);
             metadata = theActivity.getVideoMetadata();
             text.setText(metadata);
+
+            text = (TextView)getRootView().findViewById(R.id.public_key);
+            text.setText(getString(R.string.public_key));
+
+            text = (TextView)getRootView().findViewById(R.id.public_key_value);
+            text.setText(theActivity.getVideoPublicKey());
+
            installExportJSONButtonClickHandler();
             installVerifyToDeviceButtonClickHandler();
         }
@@ -218,6 +225,7 @@ A function to trigger export of JSON
         String digitalSig = "None";
         String fileHash = "None";
         String creationDate = "None";
+        String publicKey = "None";
         if(metadata != null){
             try {
 
@@ -237,11 +245,19 @@ A function to trigger export of JSON
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            try {
+
+                publicKey = metadata.getString("publicKey");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
     }
         try {
         theJSON.put("digitalSignature",digitalSig);
         theJSON.put("deviceID",theActivity.getVideoDeviceID());
         theJSON.put("fileHash",fileHash);
+            theJSON.put("publicKey",publicKey);
         theJSON.put("creationDate", creationDate);
             theJSON.put("cloudAddress", "vap.alexxg.com");
         } catch (JSONException e) {

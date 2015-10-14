@@ -308,7 +308,7 @@ public class DemoTwo extends HtmlFragment {
 
            @Override
            public void onError(Throwable t) {
-               showResult("Failed to load.");
+               showResult("Failed to load videos.");
                showResult(t.toString());
            }
        });
@@ -344,9 +344,36 @@ public class DemoTwo extends HtmlFragment {
         // 2. Instantiate our DeviceRepository.
         DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
 
-        // 3. Rather than instantiate a model directly like we did in Lesson One, we'll query
-        //    the server for all Cars, filling out our ListView with the results. In this case,
-        //    the Repository is really the workhorse; the Model is just a simple container.
+        repository.find50(new Adapter.JsonObjectCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                videoSelected = false;
+                deviceSelected = true;
+                List<JSONObject> deviceList = new ArrayList<JSONObject>();
+                // Limit viewing to the last 50 for the demo
+                try {
+                    JSONArray temp = response.getJSONArray("devices");
+                    if (temp != null) {
+                        for (int i = 0; i < temp.length(); i++) {
+                            deviceList.add((JSONObject) temp.get(i));
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    showResult("Failed to load.");
+                    return;
+                }
+                if (deviceList != null) {
+                    list.setAdapter(new DeviceListAdapter(getActivity(), deviceList));
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                showResult("Failed to load devices.");
+                showResult(t.toString());
+            }
+        });
 /*
         repository.findAll(new ModelRepository.FindAllCallback<DemoTwo.Device>() {
             @Override

@@ -34,6 +34,10 @@ public class RegistrationFragment extends HtmlFragment {
         text = (TextView)getRootView().findViewById(R.id.vap_public_key_value);
         text.setText(getSemiSecretDigitalSignaturePublicKey());
 
+        setHtmlText(R.id.vap_encryption_key, R.string.vap_encryption_key);
+        text = (TextView)getRootView().findViewById(R.id.vap_encryption_key_value);
+        text.setText(getSecretEncryptionPublicKey());
+
         installRefreshButtonClickHandler();
         installHardwareResetButtonClickHandler();
 
@@ -48,6 +52,8 @@ public class RegistrationFragment extends HtmlFragment {
                 text.setText(getSecretDeviceId().toString());
                 text = (TextView) getRootView().findViewById(R.id.vap_token_value);
                 text.setText(getSecretDeviceToken());
+                text = (TextView) getRootView().findViewById(R.id.vap_encryption_key_value);
+                text.setText(getSecretEncryptionPublicKey());
                 showResult(getResources().getString(R.string.refreshed));
             }
         });
@@ -59,7 +65,6 @@ public class RegistrationFragment extends HtmlFragment {
                     public void onClick(View v) {
                         setSecretDeviceToken(UNKNOWN);
                         setSecretDeviceId(0);
-                        setSemiSecretDigitalSignaturePublicKey(UNKNOWN);
                         setSecretEncryptionPublicKey(UNKNOWN);
                         showResult(getResources().getString(R.string.wipeVAP));
                         TextView text = (TextView) getRootView().findViewById(R.id.vap_secret_id_value);
@@ -67,6 +72,10 @@ public class RegistrationFragment extends HtmlFragment {
 
                         text = (TextView) getRootView().findViewById(R.id.vap_token_value);
                         text.setText(getSecretDeviceToken());
+
+                        text = (TextView) getRootView().findViewById(R.id.vap_encryption_key_value);
+                        text.setText(getSecretEncryptionPublicKey());
+
                     }
                 });
             }

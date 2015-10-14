@@ -105,7 +105,7 @@ The confirmation request includes the old token, a hash of the metadata and file
         <p> A VAP verification request is sent by a device that receives a video from a VAP-compliant camera device
         that claims to have produced the video. The receiving device requests with the claimer\'s device identifier, video identifier and digital signature.
         To simplify the data needed, the device ID used here is the public key, and the video ID used is the file hash matching the signature.</p>
-     ]]></string>
+     ]]></string>7
     <string name="warning_mapsNotAvailable">
         Your device does not support Google Maps.
         Locations will be displayed in a list. To get an interactive map view,
@@ -167,7 +167,19 @@ The confirmation request includes the old token, a hash of the metadata and file
     <string name="vap_public_key"><![CDATA[
         <b>Digital Signature Public Key: </b>
     ]]></string>
+    <string name="vap_encryption_key"><![CDATA[
+        <b>Secret VAP Encryption Key: </b>
+    ]]></string>
     <string name="exportJSON">Export VAP JSON</string>
     <string name="verifyText">Verify if matches this device</string>
     <string name="select_vap_json">Select VAP JSON To Verify</string>
+    <string name="jsonExtracted">The JSON file has been exported to the Documents directory.</string>
+    <string name="jsonExtractedMain">The JSON file has been exported to the main directory.</string>
+    <string name="errorExport">Error writing file. Export failed.</string>
+    <string name="none">None</string>
+    <string name="errorMetadataConvert">The metadata did not successfully convert to a JSONObject.</string>
+    <string name="errorExtractHash">The metadata did not successfully extract, with regards to the file hash.</string>
+    <string name="errorExtractSignature">The metadata did not successfully extract, with regards to the digital signature.</string>
+    <string name="verificationFailed">The verification failed due to a highly false or malformed digital signature or file hash received.</string>
+    <string name="doesItMatch">This digital signature matches this device?</string>
 </resources>

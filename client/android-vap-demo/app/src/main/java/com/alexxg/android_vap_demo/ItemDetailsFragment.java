@@ -178,7 +178,7 @@ A function to trigger export of JSON
             File file = new File(path, filename);
              boolean jsonFail = false;
             try {
-                FileOutputStream stream = new FileOutputStream(file, true);
+                FileOutputStream stream = new FileOutputStream(file, false);
                 stream.write(string.getBytes());
                 stream.close();
                 Log.i("saveData", "Data Saved");
@@ -193,7 +193,7 @@ A function to trigger export of JSON
                 intent.setData(Uri.fromFile(file));
                 theActivity.sendBroadcast(intent);
 
-                showResult("The JSON file has been exported to the Documents directory.");
+                showResult(theActivity.getString(R.string.jsonExtracted));
             }
         }
             else{
@@ -203,10 +203,10 @@ A function to trigger export of JSON
                 outputStream = getActivity().getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
                 outputStream.write(string.getBytes());
                 outputStream.close();
-                showResult("The JSON file has been exported to the main directory.");
+                showResult(theActivity.getString(R.string.jsonExtractedMain));
             } catch (Exception e) {
                 e.printStackTrace();
-                showResult("Error writing file. Export failed.");
+                showResult(theActivity.getString(R.string.errorExport));
             }
         }
     }
@@ -222,10 +222,10 @@ A function to trigger export of JSON
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String digitalSig = "None";
-        String fileHash = "None";
-        String creationDate = "None";
-        String publicKey = "None";
+        String digitalSig = theActivity.getString(R.string.none);
+        String fileHash = theActivity.getString(R.string.none);
+        String creationDate = theActivity.getString(R.string.none);
+        String publicKey = theActivity.getString(R.string.none);
         if(metadata != null){
             try {
 
@@ -246,18 +246,13 @@ A function to trigger export of JSON
                 e.printStackTrace();
             }
 
-            try {
 
-                publicKey = metadata.getString("publicKey");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
     }
         try {
         theJSON.put("digitalSignature",digitalSig);
         theJSON.put("deviceID",theActivity.getVideoDeviceID());
         theJSON.put("fileHash",fileHash);
-            theJSON.put("publicKey",publicKey);
+            theJSON.put("publicKey",theActivity.getVideoPublicKey());
         theJSON.put("creationDate", creationDate);
             theJSON.put("cloudAddress", "vap.alexxg.com");
         } catch (JSONException e) {
@@ -290,7 +285,7 @@ A function to trigger export of JSON
             showResult(mdata.toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            showResult("The metadata did not successfully convert to a JSONObject.");
+            showResult(getActivity().getString(R.string.errorMetadataConvert));
         }
 
         try {
@@ -299,12 +294,12 @@ A function to trigger export of JSON
         } catch (JSONException e) {
             e.printStackTrace();
             hashAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the file hash.");
+            showResult(getActivity().getString(R.string.errorExtractHash));
         }
         catch (Exception e){
             e.printStackTrace();
             hashAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the file hash.");
+            showResult(getActivity().getString(R.string.errorExtractHash));
         }
 
         try {
@@ -313,12 +308,12 @@ A function to trigger export of JSON
         } catch (JSONException e) {
             e.printStackTrace();
             signatureAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+            showResult(getActivity().getString(R.string.errorExtractSignature));
         }
         catch (Exception e){
             e.printStackTrace();
             signatureAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the digital signature.");
+            showResult(getActivity().getString(R.string.errorExtractSignature));
         }
         try {
             if (hashAvailable && signatureAvailable) {
@@ -327,9 +322,9 @@ A function to trigger export of JSON
         }
         catch (Exception e){
             e.printStackTrace();
-            showResult("The verification failed due to a highly false or malformed digital signature or file hash received.");
+            showResult(getActivity().getString(R.string.verificationFailed));
         }
-        showResult("Was the digital signature able to verify?");
+        showResult(getActivity().getString(R.string.doesItMatch));
         showResult(String.valueOf(verified));
     }
 

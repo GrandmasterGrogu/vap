@@ -373,6 +373,9 @@ https://github.com/alexxgathp/vap/issues/1
 	protected void showResult(String message) {
 		Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
 	}
+	protected void showShortResult(String message) {
+		Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+	}
 
 	protected void setSemiSecretDigitalSignaturePublicKey(String newValue){
 		SharedPreferences settings = context.getSharedPreferences(VAP_FILE, 0);

@@ -26,7 +26,7 @@ var current_date = (new Date()).valueOf().toString();
 var random = Math.random().toString();
 return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.toString() + current_date + random).digest('hex').toString();		
 	}
-// A function to register a device and give it a public key to communicate further 
+// A function to register a device and give it an encryption public key to communicate further 
 
     Device.greet = function (deviceIdentifier, digitalSignaturePublicKey, metadata, purpose, cb) {
         //console.log(Device);

@@ -245,7 +245,7 @@ private static boolean videoUploaded = false;
 			Map<String, Object> params = new HashMap<String, Object>();
 
 			params.put("deviceIdentifier", deviceIdentifier);
-			params.put("digitalSignaturePublicKey", deviceIdentifier);
+			params.put("digitalSignaturePublicKey", digitalSignaturePublicKey);
 			params.put("metadata", metadata);
 			params.put("purpose", purpose);
 			invokeStaticMethod("greet", params, new Adapter.JsonObjectCallback() {
@@ -288,7 +288,14 @@ private static boolean videoUploaded = false;
 
 		GuideApplication app = (GuideApplication)getActivity().getApplication();
 		final RestAdapter adapter = app.getLoopBackAdapter();
-showResult(jsonMetadata);
+
+		String videoFileHash = "None";
+		try {
+			JSONObject theMetadata = new JSONObject(jsonMetadata);
+		videoFileHash = theMetadata.getString("fileHash");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 // Retrieve secret device ID and secret token
 		// Or retrieve hardware identifier if those are missing.
 		// Check some value to see if it is registered.
@@ -298,8 +305,13 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 	// 2. Instantiate our DeviceRepository.
 	final DeviceRepository repository = adapter.createRepository(DeviceRepository.class);
 
-	setSemiSecretDigitalSignaturePublicKey(SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY);
-	repository.greet(gethwID(), SAMPLE_DIGITAL_SIGNATURE_PUBLIC_KEY, buildDeviceMetadata().toString(), PURPOSE_REGISTER,
+    showResult("Requesting to register the device...");
+	showShortResult("Sending digital signature public key...");
+	showShortResult(getSemiSecretDigitalSignaturePublicKey());
+	showShortResult("Sending device metadata...");
+	showShortResult(buildDeviceMetadata().toString());
+	final String finalVideoFileHash = videoFileHash;
+	repository.greet(gethwID(), getSemiSecretDigitalSignaturePublicKey(), buildDeviceMetadata().toString(), PURPOSE_REGISTER,
 			new Adapter.JsonObjectCallback() {
 				@Override
 				public void onError(Throwable t) {
@@ -314,7 +326,8 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 
 
 						try {
-							showResult(response.getString("publickey"));
+							showResult("Receiving encryption key...");
+							showShortResult(response.getString("publickey"));
 							setSecretEncryptionPublicKey(response.getString("publickey"));
 
 						} catch (JSONException e) {
@@ -322,7 +335,8 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 						}
 						try {
 							int newSecretDeviceID = response.getInt("deviceID");
-							showResult(Integer.toString(newSecretDeviceID));
+							showResult("Receiving VAP Device ID...");
+							showShortResult(Integer.toString(newSecretDeviceID));
 							setSecretDeviceId(newSecretDeviceID);
 
 
@@ -331,7 +345,8 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 						}
 						try {
 							String theNewToken = response.getString("token");
-							showResult(theNewToken);
+							showResult("Receiving VAP Token...");
+							showShortResult(theNewToken);
 							setSecretDeviceToken(theNewToken);
 									} catch (JSONException e) {
 							e.printStackTrace();
@@ -349,11 +364,13 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
                                         @Override
                                         public void onSuccess(JSONObject response) {
 											try {
+												showResult("Receiving new VAP Token...");
 												String theNewToken = response.getString("token");
-												showResult(theNewToken);
+												showShortResult(theNewToken);
 												setSecretDeviceToken(theNewToken);
 												showResult(getResources().getString(R.string.device_registration_confirmed));
-												sendVideoAuthenticationProtocolRequest(jsonMetadata, SAMPLE_VIDEO_FILE_HASH, adapter);
+
+												sendVideoAuthenticationProtocolRequest(jsonMetadata, finalVideoFileHash, adapter);
 											} catch (JSONException e) {
 												e.printStackTrace();
 											}
@@ -371,7 +388,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 			});
 } // End if Secret Device ID and Token is unknown.
 		else{
-	sendVideoAuthenticationProtocolRequest(jsonMetadata, SAMPLE_VIDEO_FILE_HASH, adapter);
+	sendVideoAuthenticationProtocolRequest(jsonMetadata, videoFileHash, adapter);
 }
 
 
@@ -389,7 +406,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
  */
 	}
 
-	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata,String videoHash, RestAdapter adapter) {
+	private void sendVideoAuthenticationProtocolRequest(String jsonMetadata, final String videoHash, RestAdapter adapter) {
 		final String metadataHash = computeSHAHash(jsonMetadata);
 
 
@@ -410,7 +427,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 
 					@Override
 					public void onSuccess(JSONObject response) {
-						showResult(getResources().getString(R.string.received_response_confirm_hash));
+						showShortResult(getResources().getString(R.string.received_response_confirm_hash));
 						if (response.has("filehash")&& response.has("metadatahash") && response.has("token") && response.has("oldtoken") && response.has("purpose") ) {
 							String responseFilehash = "";
 							String responseMetadatahash = "";
@@ -419,10 +436,13 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 							int videoID = 0;
 
 							try {
-								responseFilehash =  response.getString("filehash");
+								responseFilehash = response.getString("filehash");
 								showResult(getResources().getString(R.string.receive_file_hash));
-								showResult(responseFilehash);
-
+								if (videoHash.compareTo(responseFilehash) == 0) {
+									showShortResult("The file hash matches the one that was sent.");
+								} else {
+									showResult("Error: The file hash does not match.");
+								}
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -430,8 +450,12 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 							try {
 								showResult(getResources().getString(R.string.receive_metadata_hash));
 								responseMetadatahash = response.getString("metadatahash");
-								showResult(responseMetadatahash);
-
+								showShortResult(responseMetadatahash);
+								if (metadataHash.compareTo(responseMetadatahash) == 0) {
+									showShortResult("The metadata matches the metadata that was sent.");
+								} else {
+									showResult("Error: The metadata failed to confirm.");
+								}
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -439,14 +463,14 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 							try {
 								showResult(getResources().getString(R.string.receive_videoID));
 								videoID = response.getInt("purpose");
-								showResult(Integer.toString(videoID));
+								showShortResult(Integer.toString(videoID));
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
 							try {
 								showResult(getResources().getString(R.string.receive_token));
-								 theNewToken = response.getString("token");
-								showResult(theNewToken);
+								theNewToken = response.getString("token");
+								showShortResult(theNewToken);
 
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -455,52 +479,64 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 							try {
 								showResult(getResources().getString(R.string.receive_old_token));
 								oldToken = response.getString("oldtoken");
-								showResult(oldToken);
-
+								showShortResult(oldToken);
+								if (getSecretDeviceToken().compareTo(oldToken) == 0) {
+									showShortResult("The old token matches the one that was sent.");
+								} else {
+									showResult("Error: The old token does not match.");
+								}
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
+							// Check to see if filehash that was sent and received matches.
+							if (videoHash.compareTo(responseFilehash) == 0) {
 							// Check to see if the metadata on the device matches the request sent to the cloud.
 							// A hardware chip would have a protected metadata storage
-							 	if(metadataHash.compareTo(responseMetadatahash) == 0) {
+							if (metadataHash.compareTo(responseMetadatahash) == 0) {
 								// Compare the tokens and see if they match.
-								if(getSecretDeviceToken().compareTo(oldToken) == 0) {
+								if (getSecretDeviceToken().compareTo(oldToken) == 0) {
 									setSecretDeviceToken(theNewToken);
-showResult(getResources().getString(R.string.sending_video_confirm));
+									showResult(getResources().getString(R.string.sending_video_confirm));
 									// This next part is the Video Registration confirmation step.
 
-										repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, videoID,
-												new Adapter.JsonObjectCallback() {
-													@Override
-													public void onError(Throwable t) {
-														showResult(t.toString());
+									repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, videoID,
+											new Adapter.JsonObjectCallback() {
+												@Override
+												public void onError(Throwable t) {
+													showResult(t.toString());
+												}
+
+												@Override
+												public void onSuccess(JSONObject response) {
+													try {
+														String theNewToken = response.getString("token");
+														showShortResult(theNewToken);
+														setSecretDeviceToken(theNewToken);
+														showResult(getResources().getString(R.string.video_authenticated_and_confirmed));
+
+													} catch (JSONException e) {
+														e.printStackTrace();
 													}
+												}
+											});
 
-													@Override
-													public void onSuccess(JSONObject response) {
-														try {
-															String theNewToken = response.getString("token");
-															showResult(theNewToken);
-															setSecretDeviceToken(theNewToken);
-															showResult(getResources().getString(R.string.video_authenticated_and_confirmed));
-
-														} catch (JSONException e) {
-															e.printStackTrace();
-														}
-													}
-												});
-
-								}
-								else{
+								} else {
 									showResult(getResources().getString(R.string.error_authentication_failed));
 									showResult(getResources().getString(R.string.error_token_no_match));
+									showResult(getSecretDeviceToken());
+									showResult(oldToken);
 								}
-							}
-							else{
+							} else {
 								showResult(getResources().getString(R.string.error_authentication_failed));
 								showResult(getResources().getString(R.string.error_video_metadata_no_match));
-									showResult(metadataHash);
-									showResult(responseMetadatahash);
+								showResult(metadataHash);
+								showResult(responseMetadatahash);
+							}
+						}else {
+								showResult(getResources().getString(R.string.error_authentication_failed));
+								showResult("The file hash from the VAP response does not match.");
+								showResult(videoHash);
+								showResult(responseFilehash);
 							}
 						} // end if the response gave back
 						else {
@@ -608,7 +644,7 @@ try {
 			e.printStackTrace();
 
 			showResult("Failed to load J3M file. Will try with sample JSON");
-			sendRequest("{JSON METADATA SAMPLE: 1}");
+			sendRequest("{JSON METADATA SAMPLE: 1, fileHash: 'Sample Hash', digitalSignature: 'Sample digital signature', filePath: 'Sample file path'}");
 }
 	}
 
@@ -645,7 +681,7 @@ try {
 			if (resultCode == Activity.RESULT_OK) {
 				// Retrieve Video content URI
 				Uri recordedVideoLocation = data.getData();
-showResult(recordedVideoLocation.toString());
+//showResult(recordedVideoLocation.toString());
 				sendRequest(generateMetadata(recordedVideoLocation).toString());
 
 			}
@@ -666,9 +702,10 @@ showResult(recordedVideoLocation.toString());
 			videoMetadata.put("fileHash", theFileHash);
 			videoMetadata.put("digitalSignature", digitalSignature);
 			videoMetadata.put("filePath", recordedVideoLocation.toString());
-			showResult(theFileHash);
-				showResult(digitalSignature);
-			showResult(recordedVideoLocation.toString());
+		showShortResult("Generating VAP Video Metadata...");
+				//showResult(theFileHash);
+		//		showResult(digitalSignature);
+		//	showResult(recordedVideoLocation.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

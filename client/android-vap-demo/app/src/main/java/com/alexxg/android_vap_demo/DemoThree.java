@@ -193,12 +193,12 @@ private static boolean videoUploaded = false;
 			}
 
 		public void verify(String device, String video,
-						   String metadata, final Adapter.JsonObjectCallback callback) {
+						   String signature, final Adapter.JsonObjectCallback callback) {
 			Map<String, Object> params = new HashMap<String, Object>();
 
 			params.put("device", device); // Instead of uploading the video file, the server can receive a hash to check against.
 			params.put("video", video);
-			params.put("metadata", metadata);
+			params.put("signature", signature);
 
 			invokeStaticMethod("verify", params, new Adapter.JsonObjectCallback() {
 				@Override
@@ -315,8 +315,8 @@ private static boolean videoUploaded = false;
 				String signature = "";
 				try {
 					vapMetadata = new JSONObject(JsonMetadata);
-					fileHash = vapMetadata.getString("filehash");
-					publicKey = vapMetadata.getString("publickey");
+					fileHash = vapMetadata.getString("fileHash");
+					publicKey = vapMetadata.getString("publicKey");
 					signature = vapMetadata.getString("digitalSignature");
 				} catch (JSONException e) {
 					e.printStackTrace();

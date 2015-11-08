@@ -1,0 +1,28 @@
+{
+  "restApiRoot": "/api",
+  "host": "vap.alexxg.com",
+  "port": "3000",
+  "url": "http://vap.alexxg.com:3000/", 
+  "remoting": {
+    "context": {
+      "enableHttpContext": false
+    },
+    "rest": {
+      "normalizeHttpPath": false,
+      "xml": false
+    },
+    "json": {
+      "strict": false,
+      "limit": "50mb"
+    },
+    "urlencoded": {
+      "extended": true,
+      "limit": "50mb"
+    },
+    "cors": false,
+    "errorHandler": {
+      "disableStackTrace": false
+    }
+  },
+  "legacyExplorer": false
+}

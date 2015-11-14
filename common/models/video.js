@@ -150,18 +150,25 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 	*/
 	Video.verify = function (device, video, signature, cb) {
 		var valid = false;
-		
+		// First, make sure all the passed values are not null and are strings.
 		if(device == null)
 				cb(null,valid,null,{msg: "No device identifier was sent, such as the public key."});
+			if(typeof device != "string")
+						cb(null,valid,null,{msg: "The public key did not arrive as a string as expected."});
+		//device = device.replace("\n", "n");
 		if(video == null)
 				cb(null,valid,null,{msg: "No video identifier was sent, such as the file hash."});
+			if(typeof video != "string")
+						cb(null,valid,null,{msg: "The public key did not arrive as a string as expected."});
 		if(signature == null)
 				cb(null,valid,null,{msg: "No digital signature was provided."});
+			if(typeof signature != "string")
+						cb(null,valid,null,{msg: "The public key did not arrive as a string as expected."});
 		
 		var metadata = null;
 		var error = null;
-		
-		Video.app.models.Device.findOne({where:{publickey:device, confirm: constants.CONFIRM_RECORD}}, 
+		// Finding the Device. \n is replaced with % to get around a query bug.
+		Video.app.models.Device.findOne({where:{publickey: {like: device.replace(/\\n/g, "%")}, confirm: constants.CONFIRM_RECORD}, order: 'id DESC'}, 
   function(err, deviceModel){
 	  if(err){
 		error = err;		
@@ -170,9 +177,11 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		{
 		error = {msg: "The device is not registered."};
 		}
+		// Double-check that is not null and object has a proper ID.
 		if(deviceModel){
 if(deviceModel.deviceID){			
-		Video.app.models.Video.findOne({where:{filehash: video,deviceID:deviceModel.deviceID, confirm: constants.CONFIRM_RECORD}}, 
+// Finding the Video. \n is replaced with % to get around a query bug.
+		Video.app.models.Video.findOne({where:{filehash: {like: video.replace(/\\n/g, "%")},signature: {like: signature.replace(/\\n/g, "%")},deviceID:deviceModel.deviceID, confirm: constants.CONFIRM_RECORD}}, 
   function(err, videoModel){
 	  if(err){error = err;}
 	  if(!err & videoModel ==null)

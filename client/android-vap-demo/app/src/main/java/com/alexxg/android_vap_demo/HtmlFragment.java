@@ -130,7 +130,7 @@ The token value is created by the last communication and protects against replay
  * @param strPrivateKey : private key (String format)
  */
 public byte[] getDigitalSignature(String text, PrivateKey pk)  {
-	//startMethodTracing("DigitalSigning"); // Debug and Performance Measuring
+	startMethodTracing("DigitalSigning"); // Debug and Performance Measuring
     try {
 //showResult(text);
 		//showResult(strPrivateKey);
@@ -145,7 +145,7 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
         sig.initSign(pk);
         sig.update(data);
         byte[] signatureBytes = sig.sign();
-//stopMethodTracing(); // Debug and Performance Measuring
+stopMethodTracing(); // Debug and Performance Measuring
 		return signatureBytes;
        // return javax.xml.bind.DatatypeConverter.printBase64Binary(signatureBytes);
 
@@ -159,20 +159,25 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
 * It retrieves the KeyStore entry and stores in the protected RSA key pair variables.
  */
 	private void generateKeyPair(){
+		startMethodTracing("generateKeyPair");
 		KeyStore keyStore = null;
 		try {
 			keyStore = KeyStore.getInstance("AndroidKeyStore");
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 		try {
 			keyStore.load(null);
 		} catch (IOException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		} catch (CertificateException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 
 		//String alias = "my_key"; // replace as required or get it as a function argument
@@ -182,6 +187,7 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
 			nBefore = keyStore.size();
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 
 // Create the keys if necessary
@@ -218,12 +224,14 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
             }
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 		int nAfter = 0;
 		try {
 			nAfter = keyStore.size();
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 		Log.v(ERROR_TAG, "Before = " + nBefore + " After = " + nAfter);
 
@@ -233,14 +241,17 @@ public byte[] getDigitalSignature(String text, PrivateKey pk)  {
 			privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(VAP_KEYS, null);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		} catch (UnrecoverableEntryException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
 		VAPprivateKey = (RSAPrivateKey) privateKeyEntry.getPrivateKey();
 		VAPpublicKey = (RSAPublicKey) privateKeyEntry.getCertificate().getPublicKey();
-
+		stopMethodTracing();
 		Log.v(NORMAL_TAG, "private key = " + VAPprivateKey.toString());
 		Log.v(NORMAL_TAG, "public key = " + VAPpublicKey.toString());
 
@@ -294,7 +305,7 @@ private PrivateKey loadPrivateKey(String key64) throws GeneralSecurityException 
  * @param origina: original string to verify
  * @param publicKey: user public key
  */
-public static boolean verfiySignature(byte[] signatureBytes, String original, PublicKey pk){
+public static boolean verifySignature(byte[] signatureBytes, String original, PublicKey pk){
 	startMethodTracing("VerifySignature"); // Debug and Performance Measuring
     try{
 

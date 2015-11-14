@@ -317,7 +317,7 @@ A function to trigger export of JSON
         }
         try {
             if (hashAvailable && signatureAvailable) {
-                verified = verfiySignature(Base64.decode(videoDigitalSignature, Base64.DEFAULT), videoHash, VAPpublicKey);
+                verified = verifySignature(Base64.decode(videoDigitalSignature, Base64.DEFAULT), videoHash, VAPpublicKey);
             }
         }
         catch (Exception e){

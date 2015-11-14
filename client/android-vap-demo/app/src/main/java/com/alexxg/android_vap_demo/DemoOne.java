@@ -41,6 +41,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.os.Debug.startMethodTracing;
+import static android.os.Debug.stopMethodTracing;
+
 
 /**
  * Implementation for Lesson One: One Model, Hold the Schema
@@ -412,21 +415,24 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 
 		//GuideApplication app = (GuideApplication)getActivity().getApplication();
 		//RestAdapter adapter = app.getLoopBackAdapter();
+		startMethodTracing("VideoRequest");
 		final VideoRepository repository = adapter.createRepository(VideoRepository.class);
 		showResult(getResources().getString(R.string.requested_authentication));
 		repository.greet(videoHash, getSecretDeviceId(), getSecretDeviceToken(), jsonMetadata, PURPOSE_AUTHENTICATE,
 				new Adapter.JsonObjectCallback() {
 					@Override
 					public void onError(Throwable t) {
-
+						stopMethodTracing();
 						showResult(getResources().getString(R.string.error_authentication_failed));
 						showResult(t.getMessage());
-
 						t.printStackTrace();
+
 					}
 
 					@Override
 					public void onSuccess(JSONObject response) {
+						stopMethodTracing();
+						startMethodTracing("ProcessVideoRequest");
 						showShortResult(getResources().getString(R.string.received_response_confirm_hash));
 						if (response.has("filehash")&& response.has("metadatahash") && response.has("token") && response.has("oldtoken") && response.has("purpose") ) {
 							String responseFilehash = "";
@@ -445,6 +451,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 								}
 
 							} catch (JSONException e) {
+								stopMethodTracing();
 								e.printStackTrace();
 							}
 							try {
@@ -458,6 +465,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 								}
 
 							} catch (JSONException e) {
+								stopMethodTracing();
 								e.printStackTrace();
 							}
 							try {
@@ -465,6 +473,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 								videoID = response.getInt("purpose");
 								showShortResult(Integer.toString(videoID));
 							} catch (JSONException e) {
+								stopMethodTracing();
 								e.printStackTrace();
 							}
 							try {
@@ -473,6 +482,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 								showShortResult(theNewToken);
 
 							} catch (JSONException e) {
+								stopMethodTracing();
 								e.printStackTrace();
 							}
 
@@ -486,6 +496,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 									showResult("Error: The old token does not match.");
 								}
 							} catch (JSONException e) {
+								stopMethodTracing();
 								e.printStackTrace();
 							}
 							// Check to see if filehash that was sent and received matches.
@@ -498,41 +509,51 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 									setSecretDeviceToken(theNewToken);
 									showResult(getResources().getString(R.string.sending_video_confirm));
 									// This next part is the Video Registration confirmation step.
-
+									stopMethodTracing();
+									startMethodTracing("ConfirmVideoRequest");
 									repository.greet(responseFilehash, getSecretDeviceId(), theNewToken, null, videoID,
 											new Adapter.JsonObjectCallback() {
 												@Override
 												public void onError(Throwable t) {
+													stopMethodTracing();
 													showResult(t.toString());
+
 												}
 
 												@Override
 												public void onSuccess(JSONObject response) {
+													stopMethodTracing();
+													startMethodTracing("ProcessConfirmRequest");
 													try {
 														String theNewToken = response.getString("token");
 														showShortResult(theNewToken);
 														setSecretDeviceToken(theNewToken);
 														showResult(getResources().getString(R.string.video_authenticated_and_confirmed));
+														stopMethodTracing();
 
 													} catch (JSONException e) {
+														stopMethodTracing();
 														e.printStackTrace();
 													}
 												}
 											});
 
 								} else {
+									stopMethodTracing();
 									showResult(getResources().getString(R.string.error_authentication_failed));
 									showResult(getResources().getString(R.string.error_token_no_match));
 									showResult(getSecretDeviceToken());
 									showResult(oldToken);
 								}
 							} else {
+								stopMethodTracing();
 								showResult(getResources().getString(R.string.error_authentication_failed));
 								showResult(getResources().getString(R.string.error_video_metadata_no_match));
 								showResult(metadataHash);
 								showResult(responseMetadatahash);
 							}
 						}else {
+								stopMethodTracing();
 								showResult(getResources().getString(R.string.error_authentication_failed));
 								showResult("The file hash from the VAP response does not match.");
 								showResult(videoHash);
@@ -540,6 +561,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 							}
 						} // end if the response gave back
 						else {
+							stopMethodTracing();
 							showResult(getResources().getString(R.string.error_connectivity));
 						}
 					} // end OnSuccess for Video
@@ -615,6 +637,7 @@ if(getSecretDeviceId()==0 || getSecretDeviceToken().equals(UNKNOWN)) {
 	private void userRecordVideo(	)
 	{//showResult("Pick a Metadata File");
 // This code basically says to Android "Hey, I want a video!"
+		startMethodTracing("recordVideo");
 		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 		// This if is asking if the activity and package is allowed to do it.
 		if (takeVideoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -682,6 +705,7 @@ try {
 				// Retrieve Video content URI
 				Uri recordedVideoLocation = data.getData();
 //showResult(recordedVideoLocation.toString());
+				stopMethodTracing(); /// Ends recording video method tracing
 				sendRequest(generateMetadata(recordedVideoLocation).toString());
 
 			}
@@ -698,7 +722,7 @@ try {
 		try {
 			String theFileHash = getVideoFileHash(recordedVideoLocation);
 			String digitalSignature = Base64.encodeToString(getDigitalSignature(theFileHash, VAPprivateKey), Base64.DEFAULT);
-
+			startMethodTracing("generateMetadata");
 			videoMetadata.put("fileHash", theFileHash);
 			videoMetadata.put("digitalSignature", digitalSignature);
 			videoMetadata.put("filePath", recordedVideoLocation.toString());
@@ -708,7 +732,9 @@ try {
 		//	showResult(recordedVideoLocation.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
+			stopMethodTracing();
 		}
+		stopMethodTracing();
 		return videoMetadata;
 	}
 
@@ -717,6 +743,7 @@ try {
     * returns empty string or the filehash generated
      */
 	private String getVideoFileHash(Uri video) {
+		startMethodTracing("getVideoFileHash");
 	String filehash = "";
 //File videoFile = new File(video.getPath());
 		FileInputStream inputStream = null;
@@ -724,6 +751,7 @@ try {
 			try {
 				inputStream = new FileInputStream(new File(video.getPath()));
 			} catch (FileNotFoundException e) {
+				stopMethodTracing();
 				e.printStackTrace();
 			}
 		}
@@ -731,6 +759,7 @@ try {
 			try {
 				inputStream = (FileInputStream) getActivity().getApplicationContext().getContentResolver().openInputStream(video);
 			} catch (FileNotFoundException e) {
+				stopMethodTracing();
 				e.printStackTrace();
 			}
 		}
@@ -738,6 +767,7 @@ try {
 		try {
 			digester = MessageDigest.getInstance("SHA1");
 		} catch (NoSuchAlgorithmException e) {
+			stopMethodTracing();
 			e.printStackTrace();
 		}
 		byte[] bytes = new byte[8192];
@@ -754,10 +784,12 @@ try {
 				return "test";
 			}
 		} catch (IOException e) {
+			stopMethodTracing();
 			e.printStackTrace();
 		}
 		byte[] digest = digester.digest();
 filehash = Base64.encodeToString(digest, Base64.DEFAULT);
+		stopMethodTracing();
 		return filehash;
 	}
 

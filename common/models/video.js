@@ -170,9 +170,8 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		{
 		error = {msg: "The device is not registered."};
 		}
-		if(err || deviceModel ==null){
-			cb(null,valid,metadata,error);
-			}
+		if(deviceModel){
+if(deviceModel.deviceID){			
 		Video.app.models.Video.findOne({where:{filehash: video,deviceID:deviceModel.deviceID, confirm: constants.CONFIRM_RECORD}}, 
   function(err, videoModel){
 	  if(err){error = err;}
@@ -182,7 +181,15 @@ return crypto.createHash('sha1').update(oldtoken.toString() + deviceIdentifier.t
 		}
 	  if(videoModel){metadata = videoModel.metadata; valid= true;}
 		cb(null,valid,metadata,error);
-  });// end Video find		
+  });// end Video find	
+} // end if deviceID
+else{
+				cb(null,valid,metadata,error);
+}
+		} // end if deviceModel
+else{
+				cb(null,valid,metadata,error);
+}  
 	});
 	} // end Video.verify()
 	

@@ -218,7 +218,7 @@ private static boolean videoUploaded = false;
 
 
 	/**
-	 * Sends a device registration request before the VAP request, if necessary.
+	 * Sends a video verification request.
 	 */
 	private void sendRequest(final String fileHash, final String publicKey, final String signature) {
 
@@ -288,10 +288,28 @@ private static boolean videoUploaded = false;
  */
 	private void userPickVAP(){
 		// showResult("Pick a Video");
-		Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
-		pickMedia.setType("text/*");
-		startActivityForResult(pickMedia, REQUEST_VAP_FILE);
-	}
+		Boolean exceptionThrown = false;
+		try {
+			Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
+			pickMedia.setType("text/*");
+			startActivityForResult(pickMedia, REQUEST_VAP_FILE);
+		}
+		catch(Exception e){
+			exceptionThrown = true;
+			}
+
+		if(exceptionThrown){
+			// Try picking a different way
+			try {
+				Intent pickMedia = new Intent(Intent.ACTION_GET_CONTENT);
+				pickMedia.setType("*/*");
+				startActivityForResult(pickMedia, REQUEST_VAP_FILE);
+			}
+			catch(Exception e) {
+				showResult("Failed to load file picker.");
+			}
+		}
+		}
 
 
 
@@ -385,7 +403,7 @@ private static boolean videoUploaded = false;
 	}
 
 
-
+// function to initialize the button action
 	private void installUserPickVAPButtonClickHandler() {
 		final Button button = (Button) getRootView().findViewById(R.id.userPickVap);
 		button.setOnClickListener(new View.OnClickListener() {
@@ -395,23 +413,4 @@ private static boolean videoUploaded = false;
 		});
 	}
 
-
-	//
-	// Properties for accessing form values
-	//
-/*
-	private String getUser() {
-		final EditText widget = (EditText) getRootView().findViewById(R.id.editUser);
-		return widget.getText().toString();
-	}
-
-	private String getComment() {
-		final EditText widget = (EditText) getRootView().findViewById(R.id.editCaliber);
-		return widget.getText().toString();
-	}
-
-	private Boolean isReviewed() {
-		final CheckBox widget = (CheckBox) getRootView().findViewById(R.id.editArmorPiercing);
-		return widget.isChecked();
-	}*/
 }

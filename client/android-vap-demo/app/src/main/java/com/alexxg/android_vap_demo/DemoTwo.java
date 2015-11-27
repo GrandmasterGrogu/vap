@@ -398,7 +398,7 @@ public class DemoTwo extends HtmlFragment {
     }
 
     /**
-     * Basic ListAdapter implementation using our custom Model type.
+     * Basic VideoListAdapter implementation using our custom Model type.
      */
     private static class VideoListAdapter extends ArrayAdapter<JSONObject> {
         public VideoListAdapter(Context context, List<JSONObject> list) {
@@ -411,7 +411,7 @@ public class DemoTwo extends HtmlFragment {
                 convertView = LayoutInflater.from(getContext()).inflate(
                         android.R.layout.simple_list_item_1, null);
             }
-
+            // Display the video list items a certain way
             JSONObject model = getItem(position);
             if (model == null) return convertView;
 
@@ -430,13 +430,13 @@ public class DemoTwo extends HtmlFragment {
     }
 
     /**
-     * Basic ListAdapter implementation using our custom Model type.
+     * Basic DeviceListAdapter implementation using our custom Model type.
      */
     private static class DeviceListAdapter extends ArrayAdapter<JSONObject> {
         public DeviceListAdapter(Context context, List<JSONObject> list) {
             super(context, 0, list);
         }
-
+        // Display the device list items a certain way
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
@@ -478,6 +478,7 @@ public class DemoTwo extends HtmlFragment {
 
 
         list.setClickable(true);
+        // Do something when a device is selected
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -505,6 +506,7 @@ public class DemoTwo extends HtmlFragment {
             }
                         startActivity(intent);
         }
+        // Do something when a video is selected.
                 else if(videoSelected){
             // Digital Signature Test Code
             /*byte[] testSig = getDigitalSignature("TEST", VAPprivateKey);
@@ -519,7 +521,7 @@ public class DemoTwo extends HtmlFragment {
 
             JSONObject model = (JSONObject)list.getItemAtPosition(position);
             String publicKey = "";
-            showResult(model.toString());
+           // showResult(model.toString());
             try {
                 JSONObject videoDevice = model.getJSONObject("device");
             publicKey = videoDevice.getString("publickey");
@@ -565,63 +567,7 @@ public class DemoTwo extends HtmlFragment {
         installButtonClickHandlerViewDevices();
         return getRootView();
     }
-/*
-    private void processMetadataSignature(String metadata) {
-
-        boolean verified = false;
-        Boolean hashAvailable = false;
-        Boolean signatureAvailable = false;
-        String videoHash = "";
-        String videoDigitalSignature = "";
-        JSONObject mdata = null;
-        try {
-            mdata = new JSONObject(metadata);
-            showResult(mdata.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            showResult("The metadata did not successfully convert to a JSONObject.");
-        }
-
-        try {
-            videoHash = mdata.getString("fileHash");
-            hashAvailable = true;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            hashAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the file hash.");
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            hashAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the file hash.");
-        }
-
-        try {
-            videoDigitalSignature = mdata.getString("digitalSignature");
-            signatureAvailable = true ;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            signatureAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the digital signature.");
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            signatureAvailable = false;
-            showResult("The metadata did not successfully extract, with regards to the digital signature.");
-        }
-try {
-    if (hashAvailable && signatureAvailable) {
-        verified = verfiySignature(Base64.decode(videoDigitalSignature, Base64.DEFAULT), videoHash, VAPpublicKey);
-    }
-}
-catch (Exception e){
-    e.printStackTrace();
-    showResult("The verification failed due to a highly false or malformed digital signature or file hash received.");
-}
-        showResult("Was the digital signature able to verify?");
-        showResult(String.valueOf(verified));
-    }
-*/
+// Initialize the "See" buttons clicking actions
     private void installButtonClickHandlerViewVideos() {
         final Button button = (Button) getRootView().findViewById(R.id.viewVideos);
         button.setOnClickListener(new View.OnClickListener() {

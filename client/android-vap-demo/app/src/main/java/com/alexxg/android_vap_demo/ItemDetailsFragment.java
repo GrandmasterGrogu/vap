@@ -87,6 +87,9 @@ int deviceOrVideo = theActivity.getDeviceOrVideo();
             text = (TextView)getRootView().findViewById(R.id.public_key_value);
             text.setText(theActivity.getPublicKey());
 
+            getRootView().findViewById(R.id.exportJSONbutton).setVisibility(View.INVISIBLE);
+            getRootView().findViewById(R.id.verifyButton).setVisibility(View.INVISIBLE);
+
         }
         else if ( deviceOrVideo== 2)
         {
@@ -149,6 +152,7 @@ A function to install the button
 
     private void installExportJSONButtonClickHandler() {
         final Button button = (Button) getRootView().findViewById(R.id.exportJSONbutton);
+        getRootView().findViewById(R.id.exportJSONbutton).setVisibility(View.VISIBLE);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 exportJSON();
@@ -158,6 +162,7 @@ A function to install the button
 
     private void installVerifyToDeviceButtonClickHandler() {
         final Button button = (Button) getRootView().findViewById(R.id.verifyButton);
+        getRootView().findViewById(R.id.verifyButton).setVisibility(View.VISIBLE);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 processMetadataSignature(metadata);
@@ -282,7 +287,7 @@ A function to trigger export of JSON
         JSONObject mdata = null;
         try {
             mdata = new JSONObject(metadata);
-            showResult(mdata.toString());
+           // showResult(mdata.toString());
         } catch (JSONException e) {
             e.printStackTrace();
             showResult(getActivity().getString(R.string.errorMetadataConvert));

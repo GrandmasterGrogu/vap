@@ -1,64 +1,68 @@
--- phpMyAdmin SQL Dump
--- version 2.11.11.3
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Jul 14, 2015 at 01:55 PM
--- Server version: 5.5.43
--- PHP Version: 5.1.6
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
---
--- Database: `vapserver`
+-- MySQL dump 10.13  Distrib 5.6.24, for Win64 (x86_64)
 --
 
--- --------------------------------------------------------
+-- ------------------------------------------------------
+-- Server version	5.6.23-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `device`
 --
 
+DROP TABLE IF EXISTS `device`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `device` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` varchar(255) NOT NULL,
   `metadata` text NOT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `oldtoken` varchar(255) DEFAULT NULL,
+  `publickey` varchar(255) DEFAULT NULL,
+  `confirm` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `device`
---
-
-INSERT INTO `device` VALUES(1, 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX', '');
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=37340 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `video`
 --
 
+DROP TABLE IF EXISTS `video`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `video` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `metadata` text NOT NULL,
+  `filehash` varchar(255) DEFAULT NULL,
+  `signature` varchar(2050) DEFAULT NULL,
   `device_id` int(11) NOT NULL,
+  `confirm` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `device_id` (`device_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+  KEY `device_id` (`device_id`),
+  KEY `filehash` (`filehash`),
+  KEY `signature` (`signature`(255)),
+  CONSTRAINT `video_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=45002 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Dumping data for table `video`
---
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-INSERT INTO `video` VALUES(1, 'Blah Blah Blah', 1);
-INSERT INTO `video` VALUES(2, 'La La La', 1);
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `video`
---
-ALTER TABLE `video`
-  ADD CONSTRAINT `video_ibfk_1` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON UPDATE CASCADE;
+-- Dump completed on 2016-09-03 11:09:33
